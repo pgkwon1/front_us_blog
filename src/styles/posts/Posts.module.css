@@ -1,0 +1,51 @@
+.postWrap,
+.writeWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.post {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid grey;
+  background: #fff;
+  border-radius: 10px;
+  padding: 2.5rem;
+  gap: 1rem;
+}
+.postInfo {
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.postTitle {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+.postCategory {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.postAuthor {
+  font-size: 1rem;
+  font-weight: bold;
+}
+.postContents {
+  white-space: pre-line;
+}
+.postTag {
+  display: flex;
+  flex-direction: row;
+  max-width: 10%;
+}
+.tagWrap {
+  padding-left: 0;
+}
+
+.writeWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}

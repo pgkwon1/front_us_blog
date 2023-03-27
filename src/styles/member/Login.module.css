@@ -1,0 +1,12 @@
+.loginWrap {
+  background: #fff;
+}
+
+.loginBox {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 4rem;
+  border-radius: 10px;
+  border: 1px solid rgb(224, 222, 222);
+}
