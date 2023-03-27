@@ -3,7 +3,7 @@ import styled from "@/styles/member/Login.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useContext, useState } from "react";
 import { apiContext } from "@/context/ApiContext";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setLoginState } from "@/store/actions/user";
 
 export default function Login() {
@@ -12,7 +12,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
-  const test = useSelector((state) => state.login_state);
   const handleLogin = async () => {
     const { data }: object = await frontApi.post("/api/member/login", {
       userId,
