@@ -21,7 +21,7 @@ export default function Login() {
   }
 
   const handleLogin = async () => {
-    const { data }: object = await frontApi.post("/api/member/login", {
+    const { data }: object = await frontApi.post("/member/login", {
       userId,
       password,
     });

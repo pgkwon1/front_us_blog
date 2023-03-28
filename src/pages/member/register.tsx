@@ -25,7 +25,7 @@ export default function register() {
     setNickname(event.target.value);
   };
   const handleSubmit = async (): Promise<boolean> => {
-    const result = await frontApi.post("/api/member/register", {
+    const result = await frontApi.post("/member/register", {
       userId,
       password,
       nickname,
