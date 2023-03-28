@@ -3,15 +3,23 @@ import styled from "@/styles/member/Login.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useContext, useState } from "react";
 import { apiContext } from "@/context/ApiContext";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoginState } from "@/store/actions/user";
+import { useRouter } from "next/router";
 
 export default function Login() {
+  const { push } = useRouter();
   const { frontApi } = useContext(apiContext);
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-
   const dispatch = useDispatch();
+
+  const { login_state } = useSelector((state) => state.userReducer);
+
+  if (localStorage.getItem("token") && login_state === 1) {
+    push("/");
+  }
+
   const handleLogin = async () => {
     const { data }: object = await frontApi.post("/api/member/login", {
       userId,
@@ -20,6 +28,7 @@ export default function Login() {
     if (data.token) {
       localStorage.setItem("token", data.token);
       dispatch(setLoginState(1));
+      push("/");
     }
   };
 
