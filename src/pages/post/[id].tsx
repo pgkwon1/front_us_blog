@@ -12,7 +12,7 @@ export default function postView() {
 
   useEffect(() => {
     if (!router.isReady) return;
-    frontApi.get(`/api/post/${id}`).then((result) => {
+    frontApi.get(`/post/${id}`).then((result) => {
       if (!result.data.post) {
         setPost(false);
       } else {
