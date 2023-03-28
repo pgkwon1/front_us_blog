@@ -8,6 +8,8 @@ import { apiContext } from "@/context/ApiContext";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
+import { persistStore } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
 export default function App({ Component, pageProps }: AppProps) {
   if (typeof Cookies.get("X-CSRF-TOKEN") === "undefined") {
     axios.get("/api/getCsrf").then((result) => {
@@ -33,17 +35,19 @@ export default function App({ Component, pageProps }: AppProps) {
       "X-CSRF-TOKEN": Cookies.get("X-CSRF-TOKEN"),
     },
   });
-
+  let persistor = persistStore(store);
   return (
     <>
       <Provider store={store}>
-        <apiContext.Provider value={{ frontApi, backApi }}>
-          <Layout>
-            <Box className={styled.wrap}>
-              <Component {...pageProps} />
-            </Box>
-          </Layout>
-        </apiContext.Provider>
+        <PersistGate loading={null} persistor={persistor}>
+          <apiContext.Provider value={{ frontApi, backApi }}>
+            <Layout>
+              <Box className={styled.wrap}>
+                <Component {...pageProps} />
+              </Box>
+            </Layout>
+          </apiContext.Provider>
+        </PersistGate>
       </Provider>
       <style jsx global>{`
         html,
