@@ -3,7 +3,6 @@ import type { AppProps } from "next/app";
 import styled from "@/styles/Global.module.css";
 import { Box } from "@mui/material";
 import axios from "axios";
-import { env } from "process";
 import { apiContext } from "@/context/ApiContext";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
@@ -19,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
     });
   }
   const frontApi = axios.create({
-    baseURL: env.REACT_FRONT_API_URL,
+    baseURL: process.env.NEXT_PUBLIC_FRONT_API_URL,
     withCredentials: true,
     headers: {
       "Content-Type": "application/json",
@@ -27,20 +26,12 @@ export default function App({ Component, pageProps }: AppProps) {
     },
   });
 
-  const backApi = axios.create({
-    baseURL: env.REACT_BACK_API_URL,
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-TOKEN": Cookies.get("X-CSRF-TOKEN"),
-    },
-  });
   let persistor = persistStore(store);
   return (
     <>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <apiContext.Provider value={{ frontApi, backApi }}>
+          <apiContext.Provider value={{ frontApi }}>
             <Layout>
               <Box className={styled.wrap}>
                 <Component {...pageProps} />
