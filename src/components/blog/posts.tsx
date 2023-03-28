@@ -10,7 +10,7 @@ export default function Posts({ posts }) {
   const [loading, setLoading] = useState(true);
   const { frontApi } = useContext(apiContext);
   useEffect(() => {
-    frontApi.get("/api").then((result) => {
+    frontApi.get("").then((result) => {
       if (result.status === 200) {
         setPostList(result.data);
         setLoading(false);
