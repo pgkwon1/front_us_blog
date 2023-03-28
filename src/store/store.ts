@@ -11,4 +11,8 @@ const persistConfig = {
   storage,
   whitelist: ["userReducer"],
 };
-export const store = createStore(rootReducer, composeWithDevTools());
+const rootPersistReducer = persistReducer(persistConfig, rootReducer);
+export const store = configureStore({
+  reducer: rootPersistReducer,
+  devTools: true,
+});
