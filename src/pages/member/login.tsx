@@ -1,10 +1,10 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Alert, Box, Button, TextField } from "@mui/material";
 import styled from "@/styles/member/Login.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useContext, useState } from "react";
 import { apiContext } from "@/context/ApiContext";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoginState } from "@/store/actions/user";
+import { setLoginState, setCurrentUserId } from "@/store/actions/user";
 import { useRouter } from "next/router";
 
 export default function Login() {
@@ -12,6 +12,8 @@ export default function Login() {
   const { frontApi } = useContext(apiContext);
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
 
   const { login_state } = useSelector((state) => state.userReducer);
@@ -28,13 +30,19 @@ export default function Login() {
     if (data.token) {
       localStorage.setItem("token", data.token);
       dispatch(setLoginState(1));
+      dispatch(setCurrentUserId(userId));
+      setError(false);
       push("/");
+    } else if (data.error === true && data.message) {
+      setError(true);
+      setErrorMsg(data.message);
     }
   };
 
   return (
     <Box className={styled.loginWrap}>
       <Box className={styled.loginBox}>
+        {error ? <Alert severity="error">{errorMsg}</Alert> : ""}
         <TextField
           onChange={(e) => setUserId(e.target.value)}
           label="ID"

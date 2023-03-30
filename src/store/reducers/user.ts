@@ -1,7 +1,8 @@
-import { SET_LOGIN_STATE } from "../actions/user";
+import { SET_LOGIN_STATE, SET_CURRENT_USER_ID } from "../actions/user";
 
 const initialState = {
   login_state: 0,
+  userId: "",
 };
 
 export function userReducer(state = initialState, action) {
@@ -10,6 +11,11 @@ export function userReducer(state = initialState, action) {
       return {
         ...state,
         login_state: action.login_state,
+      };
+    case SET_CURRENT_USER_ID:
+      return {
+        ...state,
+        userId: action.userId,
       };
     default:
       return state;
