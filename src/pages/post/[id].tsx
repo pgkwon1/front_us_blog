@@ -38,7 +38,7 @@ export default function postView() {
 
           <Box className="postDescription">
             <Box className={styled.postTag}>
-              {post.postsTags?.map((tag: string, index: number) => {
+              {post.Tags?.map((tag: string, index: number) => {
                 return (
                   <ListItem className={styled.tagWrap} key={index}>
                     <Chip

@@ -6,5 +6,5 @@ export interface IPostDto {
   num: number;
   contents: string;
   category: Category;
-  postsTags: string[];
+  Tags: string[];
 }
