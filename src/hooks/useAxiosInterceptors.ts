@@ -11,6 +11,8 @@ type Props = {
 };
 export default async function useAxiosInterceptors() {
   const { frontApi } = useContext(apiContext);
+  const { push } = useRouter();
+  const dispatch = useDispatch();
 
   frontApi.interceptors.request.use(
     (config) => {
@@ -44,16 +46,14 @@ export default async function useAxiosInterceptors() {
             },
           }
         );
-        localStorage.setItem("token", result.data.newAccessToken);
         if (result.data.error === true) {
           // refresh 토큰도 만료됐을때 로그아웃 구현하기
-          /*
-          const { push } = useRouter();
-          const dispatch = useDispatch();
           dispatch(setLoginState(0));
           dispatch(setCurrentUserId(""));
-          push("/login");
-          */
+          localStorage.removeItem("token");
+          push("/member/login");
+        } else {
+          localStorage.setItem("token", result.data.newAccessToken);
         }
       }
 
