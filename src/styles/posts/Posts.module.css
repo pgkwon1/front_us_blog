@@ -38,12 +38,18 @@
 .postTag {
   display: flex;
   flex-direction: row;
-  max-width: 10%;
+  max-width: 100%;
+  gap: 0.05rem;
+  padding-left: 0 !important;
+  flex-wrap: wrap;
 }
 .tagWrap {
-  padding-left: 0;
+  width: auto !important;
+  padding-left: 0 !important;
 }
-
+.tag {
+  max-width: none !important;
+}
 .writeWrap {
   display: flex;
   flex-direction: column;

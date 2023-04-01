@@ -40,7 +40,7 @@ export default function Posts({ posts }) {
                   </Box>
 
                   <Box className="postDescription">
-                    <Box className={styled.postTag}>
+                    <Box className={styled.postTag} component="ul">
                       {post.Tags?.map((tag: string, index: number) => {
                         return (
                           <ListItem className={styled.tagWrap} key={index}>
