@@ -6,11 +6,11 @@ import { useDispatch } from "react-redux";
 import { setCurrentUserId, setLoginState } from "@/store/actions/user";
 import { useRouter } from "next/router";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import frontApi from "@/modules/apiInstance";
 type Props = {
   children?: ReactNode;
 };
 export default async function useAxiosInterceptors() {
-  const { frontApi } = useContext(apiContext);
   const { push } = useRouter();
   const dispatch = useDispatch();
 
