@@ -4,11 +4,11 @@ import styled from "../../styles/posts/Posts.module.css";
 import { IPostDto } from "../dto/PostDto";
 import { apiContext } from "@/context/ApiContext";
 import Link from "next/link";
+import frontApi from "@/modules/apiInstance";
 
 export default function Posts({ posts }) {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { frontApi } = useContext(apiContext);
   useEffect(() => {
     frontApi.get("").then((result) => {
       if (result.status === 200) {

@@ -3,10 +3,9 @@ import SendIcon from "@mui/icons-material/Send";
 
 import styled from "../../styles/member/Register.module.css";
 import { useContext, useState } from "react";
-import { apiContext } from "@/context/ApiContext";
+import frontApi from "@/modules/apiInstance";
 
 export default function register() {
-  const { frontApi } = useContext(apiContext);
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");

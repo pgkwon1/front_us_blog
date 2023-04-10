@@ -2,14 +2,13 @@ import { Alert, Box, Button, TextField } from "@mui/material";
 import styled from "@/styles/member/Login.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useContext, useState } from "react";
-import { apiContext } from "@/context/ApiContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoginState, setCurrentUserId } from "@/store/actions/user";
 import { useRouter } from "next/router";
+import frontApi from "@/modules/apiInstance";
 
 export default function Login() {
   const { push } = useRouter();
-  const { frontApi } = useContext(apiContext);
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);

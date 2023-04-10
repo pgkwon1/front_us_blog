@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
+import frontApi from "@/modules/apiInstance";
 export default function postView() {
   const [post, setPost] = useState({});
   const router = useRouter();
@@ -37,7 +38,9 @@ export default function postView() {
           </Box>
 
           <Box className={styled.postContents}>
-            <Typography>{post.contents}</Typography>
+            <Typography
+              dangerouslySetInnerHTML={{ __html: post.contents }}
+            ></Typography>
           </Box>
 
           <Box className="postDescription">
