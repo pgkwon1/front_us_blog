@@ -3,12 +3,12 @@ import type { AppProps } from "next/app";
 import styled from "@/styles/Global.module.css";
 import { Box } from "@mui/material";
 import axios from "axios";
-import { apiContext } from "@/context/ApiContext";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
+import apiClient from "@/modules/reactQueryInstance";
 export default function App({ Component, pageProps }: AppProps) {
   if (typeof Cookies.get("X-CSRF-TOKEN") === "undefined") {
     axios.get("/api/getCsrf").then((result) => {
@@ -17,27 +17,17 @@ export default function App({ Component, pageProps }: AppProps) {
       }
     });
   }
-  const frontApi = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_FRONT_API_URL,
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-TOKEN": Cookies.get("X-CSRF-TOKEN"),
-    },
-  });
 
   let persistor = persistStore(store);
   return (
     <>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <apiContext.Provider value={{ frontApi }}>
-            <Layout>
-              <Box className={styled.wrap}>
-                <Component {...pageProps} />
-              </Box>
-            </Layout>
-          </apiContext.Provider>
+          <Layout>
+            <Box className={styled.wrap}>
+              <Component {...pageProps} />
+            </Box>
+          </Layout>
         </PersistGate>
       </Provider>
       <style jsx global>{`
