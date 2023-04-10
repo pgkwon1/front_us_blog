@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
+import { Hydrate, QueryClientProvider } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
 export default function App({ Component, pageProps }: AppProps) {
   if (typeof Cookies.get("X-CSRF-TOKEN") === "undefined") {
@@ -23,11 +24,15 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-          <Layout>
-            <Box className={styled.wrap}>
-              <Component {...pageProps} />
-            </Box>
-          </Layout>
+          <QueryClientProvider client={apiClient}>
+            <Hydrate state={pageProps.dehydratedState}>
+              <Layout>
+                <Box className={styled.wrap}>
+                  <Component {...pageProps} />
+                </Box>
+              </Layout>
+            </Hydrate>
+          </QueryClientProvider>
         </PersistGate>
       </Provider>
       <style jsx global>{`
