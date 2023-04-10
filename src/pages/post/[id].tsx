@@ -4,11 +4,15 @@ import { Box, Chip, ListItem, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
+import "highlight.js/styles/vs2015.css";
+import hljs from "highlight.js";
 export default function postView() {
-  const { frontApi } = useContext(apiContext);
   const [post, setPost] = useState({});
   const router = useRouter();
   const { id } = router.query;
+  hljs.configure({
+    languages: ["javascript", "ruby", "python", "rust"],
+  });
 
   useEffect(() => {
     if (!router.isReady) return;
