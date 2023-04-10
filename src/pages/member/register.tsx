@@ -5,7 +5,7 @@ import styled from "../../styles/member/Register.module.css";
 import { useContext, useState } from "react";
 import frontApi from "@/modules/apiInstance";
 
-export default function register() {
+export default function Register() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");

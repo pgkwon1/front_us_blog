@@ -1,17 +1,16 @@
-import { apiContext } from "@/context/ApiContext";
 import styled from "../../styles/posts/Posts.module.css";
 import { Box, Chip, ListItem, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
-import { QueryClient, dehydrate, useQuery } from "react-query";
+import { dehydrate, useQuery } from "react-query";
 import { GetServerSideProps } from "next";
 import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
 
-export default function postView() {
+export default function PostView() {
   const [post, setPost] = useState({});
   const router = useRouter();
   const { id } = router.query;
