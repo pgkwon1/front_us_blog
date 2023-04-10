@@ -1,51 +1,76 @@
-import { Editor, EditorState, convertFromRaw } from "draft-js";
-import {
-  ItalicButton,
-  BoldButton,
-  UnderlineButton,
-  CodeButton,
-  Separator,
-} from "draft-js-buttons";
-
-import "draft-js/dist/Draft.css";
-import { useState } from "react";
-
-function MyEditor() {
-  const inlineToolbarPlugin = createInlineToolbarPlugin({
-    structure: [
-      BoldButton,
-      ItalicButton,
-      UnderlineButton,
-      CodeButton,
-      Separator,
-    ],
+import { Box } from "@mui/material";
+import { forwardRef, useEffect, useMemo, useState } from "react";
+import hljs from "highlight.js";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "highlight.js";
+import "highlight.js/styles/vs2015.css";
+import { useDispatch } from "react-redux";
+// eslint-disable-next-line react/display-name
+const Editor = forwardRef(({ editorRef, register }) => {
+  const [value, setValue] = useState("");
+  const dispatch = useDispatch();
+  hljs.configure({
+    languages: ["javascript", "ruby", "python", "rust"],
   });
-  //const toolbarPlugin = createToolbarPlugin();
-  const emptyContentState = convertFromRaw({
-    entityMap: {},
-    blocks: [
-      {
-        text: "",
-        key: "foo",
-        type: "unstyled",
-        entityRanges: [],
+  const modules = useMemo(() => {
+    return {
+      syntax: {
+        highlight: (text: string) => hljs.highlightAuto(text).value,
       },
-    ],
-  });
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createWithContent(emptyContentState)
-  );
+      toolbar: [
+        //[{ 'font': [] }],
+        [{ header: [1, 2, false] }],
+        ["bold", "italic", "underline", "strike", "blockquote"],
+        [
+          { list: "ordered" },
+          { list: "bullet" },
+          { indent: "-1" },
+          { indent: "+1" },
+        ],
+        ["link", "image", "code-block"],
+        [{ align: [] }, { color: [] }, { background: [] }],
+        ["clean"],
+      ],
+    };
+  }, []);
 
-  const onChange = (editorState) => {
-    setEditorState(editorState);
-  };
+  const formats = [
+    //'font',
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "code-block",
+    "align",
+    "color",
+    "background",
+  ];
 
+  let timeout = null;
   return (
-    <Editor
-      plugins={[inlineToolbarPlugin]}
-      editorState={editorState}
-      onChange={onChange}
-    />
+    <Box>
+      <ReactQuill
+        style={{
+          height: "300px",
+        }}
+        ref={editorRef}
+        theme="snow"
+        modules={modules}
+        value={value}
+        formats={formats}
+        onChange={(_content, _delta, _source, editor) => {
+          setValue(editor.getHTML());
+        }}
+      />
+    </Box>
   );
-}
-export default MyEditor;
+});
+export default Editor;
