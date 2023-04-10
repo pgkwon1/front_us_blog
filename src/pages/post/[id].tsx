@@ -6,7 +6,11 @@ import { useContext, useEffect, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
+import { QueryClient, dehydrate, useQuery } from "react-query";
+import { GetServerSideProps } from "next";
+import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
+
 export default function postView() {
   const [post, setPost] = useState({});
   const router = useRouter();
@@ -15,16 +19,18 @@ export default function postView() {
     languages: ["javascript", "ruby", "python", "rust"],
   });
 
+  const getPost = async (): Promise<object> => {
+    const result = await frontApi.get(`/post/${id}`);
+    return result;
+  };
+
+  const { isLoading, data } = useQuery("getPost", getPost, {
+    staleTime: 10 * 1000,
+  });
+
   useEffect(() => {
-    if (!router.isReady) return;
-    frontApi.get(`/post/${id}`).then((result) => {
-      if (!result.data.post) {
-        setPost(false);
-      } else {
-        setPost(result.data.post);
-      }
-    });
-  }, [router.isReady]);
+    !isLoading && setPost(data.data.post);
+  }, [isLoading, data]);
 
   return (
     <Box className={styled.postWrap}>
@@ -64,4 +70,14 @@ export default function postView() {
       )}
     </Box>
   );
+}
+
+export async function getServerSideProps(): GetServerSideProps {
+  await apiClient.prefetchQuery(["getPost"], async () => await getPost());
+
+  return {
+    props: {
+      dehydratedState: dehydrate(apiClient),
+    },
+  };
 }
