@@ -3,6 +3,9 @@ import { Box, Chip, ListItem, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
+import CodeIcon from "@mui/icons-material/Code";
+import CoffeeIcon from "@mui/icons-material/Coffee";
+
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
 import { dehydrate, useQuery } from "react-query";
@@ -27,6 +30,16 @@ export default function PostView() {
     staleTime: 10 * 1000,
   });
 
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "직장":
+        return <BusinessIcon />;
+      case "기술":
+        return <CodeIcon />;
+      case "잡담":
+        return <CoffeeIcon />;
+    }
+  };
   useEffect(() => {
     !isLoading && setPost(data.data.post);
   }, [isLoading, data]);
@@ -37,7 +50,10 @@ export default function PostView() {
         <Box className={styled.post}>
           <Box className={styled.postInfo}>
             <Box className={styled.postCategory}>
-              <Chip icon={<BusinessIcon />} label={post.category}></Chip>
+              <Chip
+                icon={getCategoryIcon(post.category)}
+                label={post.category}
+              ></Chip>
             </Box>
             <Box className={styled.postTitle}>{post.title}</Box>
           </Box>

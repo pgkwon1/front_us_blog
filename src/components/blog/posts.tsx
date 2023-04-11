@@ -1,5 +1,8 @@
 import { Box, Chip, ListItem, Skeleton } from "@mui/material";
 import { useEffect, useState } from "react";
+import BusinessIcon from "@mui/icons-material/Business";
+import CoffeeIcon from "@mui/icons-material/Code";
+import CodeIcon from "@mui/icons-material/Coffee";
 import styled from "../../styles/posts/Posts.module.css";
 import { IPostDto } from "../dto/PostDto";
 import Link from "next/link";
@@ -21,6 +24,18 @@ export default function Posts({ posts }) {
   const { isLoading, data } = useQuery("getPostList", getPostList, {
     staleTime: 10 * 1000,
   });
+
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "직장":
+        return <BusinessIcon />;
+      case "잡담":
+        return <CoffeeIcon />;
+      case "기술":
+        return <CodeIcon />;
+    }
+  };
+
   useEffect(() => {
     !isLoading && setPostList(data);
     setLoading(isLoading);
@@ -38,7 +53,10 @@ export default function Posts({ posts }) {
                 <Link href={`/post/${post.id}`}>
                   <Box className={styled.postInfo}>
                     <Box className={styled.postCategory}>
-                      <Chip label={post.category}></Chip>
+                      <Chip
+                        icon={getCategoryIcon(post.category)}
+                        label={post.category}
+                      ></Chip>
                     </Box>
                     <Box className={styled.postTitle}>{post.title}</Box>
                   </Box>
