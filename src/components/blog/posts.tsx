@@ -1,22 +1,30 @@
 import { Box, Chip, ListItem, Skeleton } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "../../styles/posts/Posts.module.css";
 import { IPostDto } from "../dto/PostDto";
-import { apiContext } from "@/context/ApiContext";
 import Link from "next/link";
 import frontApi from "@/modules/apiInstance";
+import { GetServerSideProps } from "next";
+import { dehydrate, useQuery } from "react-query";
+import apiClient from "@/modules/reactQueryInstance";
 
 export default function Posts({ posts }) {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {}, []);
+  const getPostList = async (): Promise<boolean> => {
+    const result = await frontApi.get("/");
+    return result.data;
+  };
+
+  const { isLoading, data } = useQuery("getPostList", getPostList, {
+    staleTime: 10 * 1000,
+  });
   useEffect(() => {
-    frontApi.get("").then((result) => {
-      if (result.status === 200) {
-        setPostList(result.data);
-        setLoading(false);
-      }
-    });
-  }, []);
+    !isLoading && setPostList(data);
+    setLoading(isLoading);
+  }, [isLoading, data]);
 
   return (
     <Box>
@@ -62,4 +70,14 @@ export default function Posts({ posts }) {
       )}
     </Box>
   );
+}
+
+export async function getServerSideProps(): GetServerSideProps {
+  await apiClient.prefetchQuery("getPostList", async () => await getPostList());
+
+  return {
+    props: {
+      dehydrateState: dehydrate(apiClient),
+    },
+  };
 }
