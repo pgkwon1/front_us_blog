@@ -1,5 +1,5 @@
 import { Box, Chip, ListItem, Skeleton } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import CoffeeIcon from "@mui/icons-material/Code";
 import CodeIcon from "@mui/icons-material/Coffee";
@@ -8,22 +8,21 @@ import { IPostDto } from "../dto/PostDto";
 import Link from "next/link";
 import frontApi from "@/modules/apiInstance";
 import { GetServerSideProps } from "next";
-import { dehydrate, useQuery } from "react-query";
+import { dehydrate, useInfiniteQuery } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
 
 export default function Posts({ posts }) {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const lastPostRef = useRef(null);
   useEffect(() => {}, []);
-  const getPostList = async (): Promise<boolean> => {
-    const result = await frontApi.get("/");
+  const getPostList = async (page: number): Promise<Array<object>> => {
+    page = page ?? 1;
+    const result = await frontApi.get(`/page/${page}`);
+    setPostList((prevList) => prevList.concat(result.data.postList));
+    result.status === 200 && setLoading(false);
     return result.data;
   };
-
-  const { isLoading, data } = useQuery("getPostList", getPostList, {
-    staleTime: 10 * 1000,
-  });
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -36,10 +35,42 @@ export default function Posts({ posts }) {
     }
   };
 
+  const { data, isSuccess, hasNextPage, fetchNextPage } = useInfiniteQuery(
+    "postList",
+    ({ pageParam = 1 }) => getPostList(pageParam),
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        const nextPage = allPages.length + 1;
+        return lastPage.postList.length !== 0 ? nextPage : undefined;
+      },
+      staleTime: 60 * 1000,
+    }
+  );
+  const handleObserver = useCallback(
+    (entries) => {
+      const [target] = entries;
+      // target이 포커싱 되었을때 불러올 데이터가 있을때
+      if (target.isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage]
+  );
   useEffect(() => {
-    !isLoading && setPostList(data);
-    setLoading(isLoading);
-  }, [isLoading, data]);
+    if (isSuccess === false) return;
+    const page = data?.pages.length;
+  }, [data, isSuccess, fetchNextPage, hasNextPage, handleObserver]);
+
+  useEffect(() => {
+    if (lastPostRef.current instanceof HTMLElement === true) {
+      const lastElement = lastPostRef.current;
+      const observer = new IntersectionObserver(handleObserver, {
+        threshold: 0,
+      });
+      observer.observe(lastElement);
+      return () => observer.unobserve(lastElement);
+    }
+  }, [loading, fetchNextPage, hasNextPage, handleObserver]);
 
   return (
     <Box>
@@ -84,6 +115,7 @@ export default function Posts({ posts }) {
               </Box>
             );
           })}
+          <Box ref={lastPostRef}></Box>
         </Box>
       )}
     </Box>
