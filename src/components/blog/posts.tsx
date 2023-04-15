@@ -35,17 +35,29 @@ export default function Posts({ posts }) {
     }
   };
 
-  const { data, isSuccess, hasNextPage, fetchNextPage } = useInfiniteQuery(
-    "postList",
-    ({ pageParam = 1 }) => getPostList(pageParam),
-    {
-      getNextPageParam: (lastPage, allPages) => {
-        const nextPage = allPages.length + 1;
-        return lastPage.postList.length !== 0 ? nextPage : undefined;
-      },
-      staleTime: 60 * 1000,
+  const { data, isSuccess, hasNextPage, fetchNextPage, isStale } =
+    useInfiniteQuery(
+      "postList",
+      ({ pageParam = 1 }) => getPostList(pageParam),
+      {
+        getNextPageParam: (lastPage, allPages) => {
+          const nextPage = allPages.length + 1;
+          return lastPage.postList.length !== 0 ? nextPage : undefined;
+        },
+        staleTime: 120 * 1000,
+        cacheTime: 120 * 1000,
+        refetchOnWindowFocus: true,
+      }
+    );
+  // staletime(데이터만료시간) 이 안지났을 경우 캐시된 데이터로 렌더링.
+  useEffect(() => {
+    if (isStale === false) {
+      data?.pages.map((page, index) => {
+        setPostList((prevList, index) => prevList.concat(page.postList));
+      });
+      setLoading(false);
     }
-  );
+  }, []);
   const handleObserver = useCallback(
     (entries) => {
       const [target] = entries;
