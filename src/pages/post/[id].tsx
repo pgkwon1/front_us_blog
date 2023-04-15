@@ -12,6 +12,7 @@ import { dehydrate, useQuery } from "react-query";
 import { GetServerSideProps } from "next";
 import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
+import Link from "next/link";
 
 export default function PostView() {
   const [post, setPost] = useState({});
@@ -26,9 +27,13 @@ export default function PostView() {
     return result;
   };
 
-  const { isLoading, data } = useQuery("getPost", getPost, {
+  const { isLoading, data, isStale, refetch } = useQuery("getPost", getPost, {
     staleTime: 10 * 1000,
   });
+
+  if (isStale === false && data.data.post.id !== id) {
+    refetch();
+  }
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -69,11 +74,13 @@ export default function PostView() {
               {post.Tags?.map((tag: string, index: number) => {
                 return (
                   <ListItem className={styled.tagWrap} key={index}>
-                    <Chip
-                      className={styled.tag}
-                      variant="outlined"
-                      label={`# ${tag.tagName}`}
-                    ></Chip>
+                    <Link href={`/post/tag/${tag.tagName}`}>
+                      <Chip
+                        className={styled.tag}
+                        variant="outlined"
+                        label={`# ${tag.tagName}`}
+                      ></Chip>
+                    </Link>
                   </ListItem>
                 );
               })}
