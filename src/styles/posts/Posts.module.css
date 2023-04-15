@@ -35,6 +35,11 @@
 .postContents {
   white-space: pre-line;
 }
+.postDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 .postTag {
   display: flex;
   flex-direction: row;
@@ -49,6 +54,14 @@
 }
 .tag {
   max-width: none !important;
+}
+.postDescription .createdAt,
+.like {
+  font-size: 0.8rem;
+}
+.postBottomDescription {
+  flex-direction: row !important;
+  justify-content: space-between;
 }
 .writeWrap {
   display: flex;

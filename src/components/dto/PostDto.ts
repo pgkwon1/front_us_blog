@@ -7,4 +7,6 @@ export interface IPostDto {
   contents: string;
   category: Category;
   Tags: string[];
+  createdAt: Date;
+  like: number;
 }

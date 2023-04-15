@@ -108,7 +108,7 @@ export default function Posts({ posts }) {
                     <Box>{post.contents.substr(0, 100)}</Box>
                   </Box>
 
-                  <Box className="postDescription">
+                  <Box className={styled.postDescription}>
                     <Box className={styled.postTag} component="ul">
                       {post.Tags?.map((tag: string, index: number) => {
                         return (
@@ -121,6 +121,17 @@ export default function Posts({ posts }) {
                           </ListItem>
                         );
                       })}
+                    </Box>
+                    <Box
+                      className={[
+                        styled.postDescription,
+                        styled.postBottomDescription,
+                      ]}
+                    >
+                      <Box className={styled.like}>좋아요 {post.like}개 </Box>
+                      <Box className={styled.createdAt}>
+                        {moment(post.createdAt).utc().fromNow()}
+                      </Box>
                     </Box>
                   </Box>
                 </Link>
