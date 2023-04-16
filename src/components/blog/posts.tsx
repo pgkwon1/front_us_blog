@@ -1,8 +1,8 @@
 import { Box, Chip, ListItem, Skeleton } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
-import CoffeeIcon from "@mui/icons-material/Code";
-import CodeIcon from "@mui/icons-material/Coffee";
+import CodeIcon from "@mui/icons-material/Code";
+import CoffeeIcon from "@mui/icons-material/Coffee";
 import styled from "../../styles/posts/Posts.module.css";
 import { IPostDto } from "../dto/PostDto";
 import Link from "next/link";
