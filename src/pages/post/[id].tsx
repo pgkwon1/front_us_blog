@@ -29,6 +29,7 @@ export default function PostView() {
 
   const { isLoading, data, isStale, refetch } = useQuery("getPost", getPost, {
     staleTime: 10 * 1000,
+    cacheTime: 10 * 1000,
   });
 
   if (isStale === false && data.data.post.id !== id) {
