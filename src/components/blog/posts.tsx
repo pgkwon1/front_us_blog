@@ -10,7 +10,7 @@ import frontApi from "@/modules/apiInstance";
 import { GetServerSideProps } from "next";
 import { dehydrate, useInfiniteQuery } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
-
+import moment from "moment-timezone";
 export default function Posts({ posts }) {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
