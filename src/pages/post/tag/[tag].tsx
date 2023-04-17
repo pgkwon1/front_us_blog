@@ -22,30 +22,40 @@ export default function PostbyTag() {
   const [loading, setLoading] = useState(true);
   const [length, setLength] = useState(0);
   const lastPostRef = useRef(null);
+  const dispatch = useDispatch();
   const { tag } = router.query;
+  const currentTag = useSelector((state) => state.postReducer);
 
   async function getPostByTag(page) {
     const result = await frontApi.get(`/post/tag/${tag}/${page}`);
+    dispatch(setCurrentTag(tag));
     setPostList((prevList) => prevList.concat(result.data.postList));
     setLength(result.data.postList);
     setLoading(false);
     return result.data;
   }
 
-  const { data, refetch, hasNextPage, fetchNextPage, isStale } =
-    useInfiniteQuery(
-      "getPostByTag",
-      ({ pageParam = 1 }) => getPostByTag(pageParam),
+  const {
+    isLoading,
+    data,
+    isSuccess,
+    refetch,
+    hasNextPage,
+    fetchNextPage,
+    isStale,
+  } = useInfiniteQuery(
+    "getPostByTag",
+    ({ pageParam = 1 }) => getPostByTag(pageParam),
 
-      {
-        getNextPageParam(lastPage, allPages) {
-          const nextPage = allPages.length + 1;
-          return lastPage.postList.length !== 0 ? nextPage : undefined;
-        },
-        staleTime: 120 * 1000,
-        cacheTime: 120 * 1000,
-      }
-    );
+    {
+      getNextPageParam(lastPage, allPages) {
+        const nextPage = allPages.length + 1;
+        return lastPage.postList.length !== 0 ? nextPage : undefined;
+      },
+      staleTime: 120 * 1000,
+      cacheTime: 120 * 1000,
+    }
+  );
 
   const handleObserver = useCallback(
     (entries) => {
@@ -57,6 +67,20 @@ export default function PostbyTag() {
     },
     [fetchNextPage, hasNextPage]
   );
+
+  useEffect(() => {
+    if (isStale === false) {
+      // 캐시 데이터가 남아있으면서 태그가 달라졌을 경우 다시 데이터를 가져옴
+      if (currentTag !== tag) {
+        refetch();
+      }
+      console.log(currentTag);
+      data?.pages.map((post) => {
+        setPostList((prevList) => prevList.concat(post.postList));
+        setLoading(false);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (lastPostRef.current instanceof HTMLElement) {
