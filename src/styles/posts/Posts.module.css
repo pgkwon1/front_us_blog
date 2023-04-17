@@ -55,6 +55,13 @@
 .tag {
   max-width: none !important;
 }
+.tagWrap :hover {
+  background: #f2f2f2;
+}
+
+.tagWrap > span :hover {
+  background: none;
+}
 .postDescription .createdAt,
 .like {
   font-size: 0.8rem;
