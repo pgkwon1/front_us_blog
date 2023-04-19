@@ -13,11 +13,12 @@ import styled from "../../styles/posts/Posts.module.css";
 import dynamic from "next/dynamic";
 import { WithContext as ReactTags } from "react-tag-input";
 import { useContext, useRef, useEffect, useState } from "react";
-import { apiContext } from "@/context/ApiContext";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { IPostWriteForm } from "@/components/dto/PostDto";
 import { useRouter } from "next/router";
+import frontApi from "@/modules/apiInstance";
+
 const TextEditor = dynamic(
   async () => await import("@/components/blog/editor"),
   {
@@ -44,7 +45,6 @@ export default function PostWrite() {
   const [category, setCategory] = useState("");
   const [contentsErr, setContentsErr] = useState(false);
   const editorRef = useRef(null);
-  const { frontApi } = useContext(apiContext);
   const { push } = useRouter();
   const KeyCodes = {
     comma: 188,
