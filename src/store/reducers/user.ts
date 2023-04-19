@@ -1,23 +1,18 @@
-import { SET_LOGIN_STATE, SET_CURRENT_USER_ID } from "../actions/user";
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  login_state: 0,
-  userId: "",
-};
+const userReducer = createSlice({
+  name: "userReducer",
+  initialState: { login_state: 0, userId: "" },
+  reducers: {
+    setLoginState: (state, action) => {
+      state.login_state = action.payload;
+    },
 
-export function userReducer(state = initialState, action) {
-  switch (action.type) {
-    case SET_LOGIN_STATE:
-      return {
-        ...state,
-        login_state: action.login_state,
-      };
-    case SET_CURRENT_USER_ID:
-      return {
-        ...state,
-        userId: action.userId,
-      };
-    default:
-      return state;
-  }
-}
+    setCurrentUserId: (state, action) => {
+      state.userId = action.payload;
+    },
+  },
+});
+
+export const { setLoginState, setCurrentUserId } = userReducer.actions;
+export default userReducer.reducer;

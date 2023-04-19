@@ -1,17 +1,17 @@
-import { SET_CURRENT_TAG } from "../actions/post";
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  currentTag: "",
-};
-export default function postReducer(state = initialState, action) {
-  console.log(action);
-  switch (action.type) {
-    case SET_CURRENT_TAG:
-      return {
-        ...state,
-        currentTag: action.data,
-      };
-    default:
-      return state;
-  }
-}
+const postReducer = createSlice({
+  name: "postReducer",
+  initialState: { currentTag: "", currentCategory: "" },
+  reducers: {
+    setCurrentTag: (state, action) => {
+      state.currentTag = action.payload;
+    },
+    setCurrentCategory: (state, action) => {
+      state.currentCategory = action.payload;
+    },
+  },
+});
+
+export const { setCurrentTag, setCurrentCategory } = postReducer.actions;
+export default postReducer.reducer;

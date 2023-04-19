@@ -3,9 +3,9 @@ import styled from "@/styles/member/Login.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoginState, setCurrentUserId } from "@/store/actions/user";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
+import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 
 export default function Login() {
   const { push } = useRouter();

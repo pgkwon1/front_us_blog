@@ -14,7 +14,7 @@ import moment from "moment-timezone";
 import { useRouter } from "next/router";
 import { ThreeDots } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
-import { setCurrentTag } from "@/store/actions/post";
+import { setCurrentTag } from "@/store/reducers/post";
 
 export default function PostbyTag() {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function PostbyTag() {
   async function getPostByTag(page) {
     const result = await frontApi.get(`/post/tag/${tag}/${page}`);
     dispatch(setCurrentTag(tag));
+    console.log("🚀 ~ file: [tag].tsx:32 ~ getPostByTag ~ tag:", tag);
     setPostList((prevList) => prevList.concat(result.data.postList));
     setLength(result.data.postList);
     setLoading(false);
