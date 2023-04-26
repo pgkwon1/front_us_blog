@@ -54,6 +54,10 @@ export default async function useAxiosInterceptors() {
           push("/member/login");
         } else {
           localStorage.setItem("token", result.data.newAccessToken);
+          config.headers[
+            "Authorization"
+          ] = `Bearer ${result.data.newAccessToken}`;
+          return frontApi(config);
         }
       }
 
