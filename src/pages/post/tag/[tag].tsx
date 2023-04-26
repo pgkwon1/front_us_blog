@@ -29,7 +29,6 @@ export default function PostbyTag() {
   async function getPostByTag(page) {
     const result = await frontApi.get(`/post/tag/${tag}/${page}`);
     dispatch(setCurrentTag(tag));
-    console.log("🚀 ~ file: [tag].tsx:32 ~ getPostByTag ~ tag:", tag);
     setPostList((prevList) => prevList.concat(result.data.postList));
     setLength(result.data.postList);
     setLoading(false);
