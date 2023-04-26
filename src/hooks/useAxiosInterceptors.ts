@@ -3,7 +3,7 @@ import axios from "axios";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { setCurrentUserId, setLoginState } from "@/store/actions/user";
+import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { useRouter } from "next/router";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import frontApi from "@/modules/apiInstance";
