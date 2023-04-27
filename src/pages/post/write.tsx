@@ -40,10 +40,14 @@ export default function PostWrite() {
     },
   });
   const author = useSelector((state) => state.userReducer.userId);
-  const [title, setTitle] = useState("");
-  const [tags, setTags] = useState([]);
-  const [category, setCategory] = useState("");
   const [contentsErr, setContentsErr] = useState(false);
+  const [writeData, setWriteData] = useState({
+    author,
+    title: "",
+    tags: [],
+    category: "",
+    contents: "",
+  });
   const editorRef = useRef(null);
   const { push } = useRouter();
   const KeyCodes = {
@@ -53,34 +57,48 @@ export default function PostWrite() {
 
   const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
+  const handleContents = (contents) => {
+    setWriteData({
+      ...writeData,
+      ["contents"]: contents,
+    });
+  };
   const addTag = (addTag) => {
+    const { tags } = writeData;
     const findTag = tags.filter((tag) => tag.tagName === addTag.text);
     if (findTag.length === 0 && tags.length < 5) {
-      setTags([...tags, { tagName: addTag.text }]);
+      setWriteData({
+        ...writeData,
+        ["tags"]: [...tags, { tagName: addTag.text }],
+      });
     }
   };
-  const deleteTag = (deleteIndex) => {
-    setTags(tags.filter((tag, index) => deleteIndex !== index));
+  const deleteTag = (deleteIndex: number) => {
+    const tagList = tags.filter(
+      (tag: object, index: number) => deleteIndex !== index
+    );
+    setWriteData({
+      ...writeData,
+      ["tags"]: tagList,
+    });
+  };
+  const handleWriteData = ({
+    name,
+    value,
+  }: {
+    name: string;
+    value: string | null;
+  }) => {
+    setWriteData({ ...writeData, [name]: value });
   };
 
-  const changeCategory = (event) => {
-    console.log(event.target.value);
-    setCategory(event.target.value);
-  };
   const onSubmit = async () => {
     const contents = editorRef?.current.value;
-
     if (contents === "") {
       setContentsErr(true);
       return false;
     }
-    const { data } = await frontApi.post("/post/write", {
-      author,
-      title,
-      contents,
-      tags,
-      category,
-    });
+    const { data } = await frontApi.post("/post/write", writeData);
     push(`/post/${data}`);
   };
   return (
@@ -95,7 +113,9 @@ export default function PostWrite() {
               name: "category",
               id: "uncontrolled-native",
             }}
-            onChange={changeCategory}
+            onChange={(e) =>
+              handleWriteData({ name: "category", value: e.target.value })
+            }
             sx={{ width: "15rem" }}
           >
             <option value={""}>카테고리를 선택해주세요</option>
@@ -113,7 +133,9 @@ export default function PostWrite() {
               message: "3글자 이상 입력해주세요.",
             },
           })}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={(e) =>
+            handleWriteData({ name: "title", value: e.target.value })
+          }
           label="제목"
           variant="standard"
         />
@@ -123,10 +145,10 @@ export default function PostWrite() {
           ""
         )}
 
-        <TextEditor editorRef={editorRef} />
+        <TextEditor editorRef={editorRef} handleContents={handleContents} />
         {contentsErr ? <Alert severity="error">내용을 입력해주세요</Alert> : ""}
         <Box className={styled.postTag} component="ul">
-          {tags.map((tag, index) => {
+          {writeData.tags.map((tag, index) => {
             return (
               <ListItem className={styled.tagWrap} key={index}>
                 <Chip

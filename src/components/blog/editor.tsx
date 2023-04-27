@@ -7,12 +7,16 @@ import "highlight.js";
 import "highlight.js/styles/vs2015.css";
 import { useDispatch } from "react-redux";
 // eslint-disable-next-line react/display-name
-const Editor = forwardRef(({ editorRef, register }) => {
+const Editor = forwardRef(({ editorRef, handleContents }) => {
   const [value, setValue] = useState("");
   const dispatch = useDispatch();
   hljs.configure({
     languages: ["javascript", "ruby", "python", "rust"],
   });
+
+  const changeContents = (contents) => {
+    handleContents(contents);
+  };
   const modules = useMemo(() => {
     return {
       syntax: {
@@ -67,6 +71,7 @@ const Editor = forwardRef(({ editorRef, register }) => {
         value={value}
         formats={formats}
         onChange={(_content, _delta, _source, editor) => {
+          changeContents(editor.getHTML());
           setValue(editor.getHTML());
         }}
       />
