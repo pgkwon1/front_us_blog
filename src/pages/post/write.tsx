@@ -113,6 +113,9 @@ export default function PostWrite() {
               name: "category",
               id: "uncontrolled-native",
             }}
+            {...register("category", {
+              required: "카테고리를 선택해주세요",
+            })}
             onChange={(e) =>
               handleWriteData({ name: "category", value: e.target.value })
             }
@@ -125,6 +128,11 @@ export default function PostWrite() {
             <option value={"직장"}>직장</option>
           </NativeSelect>
         </FormControl>
+        {errors.category?.message ? (
+          <Alert severity="error">{errors.category.message}</Alert>
+        ) : (
+          ""
+        )}
         <TextField
           {...register("title", {
             required: "제목을 입력해주세요",
