@@ -1,4 +1,4 @@
-import { setCurrentUserId, setLoginState } from "@/store/actions/user";
+import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
