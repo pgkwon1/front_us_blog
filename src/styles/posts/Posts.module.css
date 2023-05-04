@@ -81,3 +81,24 @@
   color: #f8f8f2;
   overflow: visible;
 }
+
+.likeWrap {
+  border-radius: 10px;
+  padding: 2rem 0 2rem 0;
+}
+
+.like {
+  display: flex;
+  justify-content: center;
+}
+.likeButton {
+  color: black !important;
+  font-size: 18px !important;
+}
+
+.likeOn {
+  color: rgb(123, 123, 251) !important;
+}
+.unlikeOn {
+  color: rgb(255, 138, 138) !important;
+}

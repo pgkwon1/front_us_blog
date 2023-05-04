@@ -14,11 +14,19 @@ import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
 import Link from "next/link";
 import moment from "moment-timezone";
+import Like from "@/components/blog/like";
+import { useSelector } from "react-redux";
 
 export default function PostView() {
   const [post, setPost] = useState({});
+  const [likeInfo, setLikeInfo] = useState({
+    like: false,
+    unlike: false,
+  });
+
   const router = useRouter();
   const { id } = router.query;
+  const { userId } = useSelector((state) => state.userReducer);
   hljs.configure({
     languages: ["javascript", "ruby", "python", "rust"],
   });
@@ -51,6 +59,25 @@ export default function PostView() {
     !isLoading && setPost(data.data.post);
   }, [isLoading, data]);
 
+  useEffect(() => {
+    post.postsLikes?.map((like) => {
+      if (like.type === "LIKE" && like.userId === userId) {
+        setLikeInfo((current) => {
+          return {
+            ...current,
+            like: true,
+          };
+        });
+      } else if (like.type === "UNLIKE" && like.userId === userId) {
+        setLikeInfo((current) => {
+          return {
+            ...current,
+            unlike: true,
+          };
+        });
+      }
+    });
+  }, [post]);
   return (
     <Box className={styled.postWrap}>
       {post ? (
@@ -88,6 +115,7 @@ export default function PostView() {
               })}
             </Box>
           </Box>
+          <Like likes={post.like} unlikes={post.unlike} likeProp={likeInfo} />
           <Box
             className={[styled.postDescription, styled.postBottomDescription]}
           >
