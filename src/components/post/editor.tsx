@@ -1,13 +1,17 @@
 import { Box } from "@mui/material";
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import { RefObject, forwardRef, useEffect, useMemo, useState } from "react";
 import hljs from "highlight.js";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "highlight.js";
 import "highlight.js/styles/vs2015.css";
 import { useDispatch } from "react-redux";
-// eslint-disable-next-line react/display-name
-const Editor = forwardRef(({ editorRef, handleContents }) => {
+import { IEditorProps } from "../dto/posts/WriteDto";
+
+const Editor = forwardRef(function Editor({
+  editorRef,
+  handleContents,
+}: IEditorProps) {
   const [value, setValue] = useState("");
   const dispatch = useDispatch();
   hljs.configure({
@@ -78,4 +82,6 @@ const Editor = forwardRef(({ editorRef, handleContents }) => {
     </Box>
   );
 });
+Editor.displayName = "Editor";
+
 export default Editor;
