@@ -17,6 +17,7 @@ import { ThreeDots } from "react-loader-spinner";
 import styled from "@/styles/posts/Posts.module.css";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
+import { IRootState } from "@/components/dto/ReduxDto";
 
 export default function PostByCategory() {
   const [postList, setPostList] = useState([]);
@@ -26,7 +27,9 @@ export default function PostByCategory() {
   const { category } = router.query;
   const lastPostRef = useRef(null);
   const dispatch = useDispatch();
-  const { currentCategory } = useSelector((state) => state.postReducer);
+  const { currentCategory } = useSelector(
+    (state: IRootState) => state.postReducer
+  );
   async function getPostByTag(page: number) {
     const result = await frontApi.get(`/post/category/${category}/${page}`);
     setPostList((prevList) => prevList.concat(result.data.postList));

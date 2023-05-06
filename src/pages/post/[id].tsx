@@ -17,6 +17,7 @@ import Link from "next/link";
 import moment from "moment-timezone";
 import Like from "@/components/post/like";
 import { useSelector } from "react-redux";
+import { IRootState } from "@/components/dto/ReduxDto";
 
 export default function PostView() {
   const [post, setPost] = useState({});
@@ -27,7 +28,7 @@ export default function PostView() {
 
   const router = useRouter();
   const { id } = router.query;
-  const { userId } = useSelector((state) => state.userReducer);
+  const { userId } = useSelector((state: IRootState) => state.userReducer);
   hljs.configure({
     languages: ["javascript", "ruby", "python", "rust"],
   });

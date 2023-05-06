@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { ThreeDots } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTag } from "@/store/reducers/post";
+import { IRootState } from "@/components/dto/ReduxDto";
 
 export default function PostbyTag() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function PostbyTag() {
   const lastPostRef = useRef(null);
   const dispatch = useDispatch();
   const { tag } = router.query;
-  const currentTag = useSelector((state) => state.postReducer);
+  const currentTag = useSelector((state: IRootState) => state.postReducer);
 
   async function getPostByTag(page) {
     const result = await frontApi.get(`/post/tag/${tag}/${page}`);

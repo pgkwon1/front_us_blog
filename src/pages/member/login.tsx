@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
+import { IRootState } from "@/components/dto/ReduxDto";
 
 export default function Login() {
   const { push } = useRouter();
@@ -15,7 +16,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState("");
   const dispatch = useDispatch();
 
-  const { login_state } = useSelector((state) => state.userReducer);
+  const { login_state } = useSelector((state: IRootState) => state.userReducer);
 
   if (localStorage.getItem("token") && login_state === 1) {
     push("/");

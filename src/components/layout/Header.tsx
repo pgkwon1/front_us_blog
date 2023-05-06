@@ -10,11 +10,10 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import { IRootState } from "../dto/ReduxDto";
 
 export default function Header() {
-  const login_state: number = useSelector(
-    (state) => state.userReducer.login_state
-  );
+  const { login_state } = useSelector((state: IRootState) => state.userReducer);
   const menuList = [
     {
       menuName: "Home",

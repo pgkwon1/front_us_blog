@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { IPostWriteForm } from "@/components/dto/PostDto";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
+import { IRootState } from "@/components/dto/ReduxDto";
 
 const TextEditor = dynamic(
   async () => await import("@/components/post/editor"),
@@ -39,7 +40,7 @@ export default function PostWrite() {
       tags: [],
     },
   });
-  const author = useSelector((state) => state.userReducer.userId);
+  const author = useSelector((state: IRootState) => state.userReducer.userId);
   const [contentsErr, setContentsErr] = useState(false);
   const [writeData, setWriteData] = useState({
     author,
