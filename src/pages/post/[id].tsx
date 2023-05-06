@@ -90,6 +90,24 @@ export default function PostView() {
                 label={post.category}
               ></Chip>
             </Box>
+            <Box
+              sx={{
+                fontSize: "13px",
+                display: "flex",
+                flexDirection: "row",
+                gap: "0.8rem",
+              }}
+            >
+              <Avatar color="primary" variant="soft">
+                {post.author && post.author.slice(0, 2).toUpperCase()}
+              </Avatar>
+              <Box
+                sx={{ display: "flex", gap: "0.3rem", flexDirection: "column" }}
+              >
+                <Box>{post.author}</Box>
+                <Box>{moment(post.createdAt).utc().fromNow()}</Box>
+              </Box>
+            </Box>
             <Box className={styled.postTitle}>{post.title}</Box>
           </Box>
 
