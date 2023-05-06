@@ -11,10 +11,14 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Hydrate, QueryClientProvider } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
 export default function App({ Component, pageProps }: AppProps) {
-  if (typeof Cookies.get("X-CSRF-TOKEN") === "undefined") {
+  if (
+    typeof Cookies.get("X-CSRF-TOKEN") === "undefined" ||
+    !sessionStorage.getItem("visited")
+  ) {
     axios.get("/api/getCsrf").then((result) => {
       if (result.status === 200) {
         Cookies.set("X-CSRF-TOKEN", result.data.CSRF_TOKEN);
+        sessionStorage.setItem("visited", "1");
       }
     });
   }
