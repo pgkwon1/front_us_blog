@@ -121,8 +121,8 @@ export default function PostView() {
             <Box className={styled.postTag} component="ul">
               {post.Tags?.map((tag: string, index: number) => {
                 return (
-                  <Link href={`/post/tag/${tag.tagName}`}>
-                    <ListItem className={styled.tagWrap} key={index}>
+                  <Link href={`/post/tag/${tag.tagName}`} key={index}>
+                    <ListItem className={styled.tagWrap}>
                       <Chip
                         className={styled.tag}
                         variant="outlined"
