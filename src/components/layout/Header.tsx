@@ -12,7 +12,7 @@ import Link from "next/link";
 import { useSelector } from "react-redux";
 
 export default function Header() {
-  const { login_state } = useSelector((state) => state.userReducer);
+  const { login_state }: number = useSelector((state) => state.userReducer);
   const menuList = [
     {
       menuName: "Home",
