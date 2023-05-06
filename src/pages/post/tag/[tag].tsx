@@ -25,7 +25,7 @@ export default function PostbyTag() {
   const lastPostRef = useRef(null);
   const dispatch = useDispatch();
   const { tag } = router.query;
-  const currentTag = useSelector((state: IRootState) => state.postReducer);
+  const { currentTag } = useSelector((state: IRootState) => state.postReducer);
 
   async function getPostByTag(page) {
     const result = await frontApi.get(`/post/tag/${tag}/${page}`);

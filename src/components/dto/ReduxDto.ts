@@ -1,6 +1,14 @@
-import { Reducer } from "redux";
-
 export interface IRootState {
-  userReducer: Reducer;
-  postReducer: Reducer;
+  userReducer: IUserReducer;
+  postReducer: IPostReducer;
+}
+
+interface IUserReducer {
+  login_state: number;
+  userId: string;
+}
+
+interface IPostReducer {
+  currentTag: string;
+  currentCategory: string;
 }
