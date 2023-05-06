@@ -74,13 +74,12 @@ export default function PostbyTag() {
       if (currentTag !== tag) {
         refetch();
       }
-      console.log(currentTag);
       data?.pages.map((post) => {
         setPostList((prevList) => prevList.concat(post.postList));
         setLoading(false);
       });
     }
-  }, [isStale, currentTag, data?.pages, refetch]);
+  }, [isStale, currentTag, data?.pages, refetch, tag]);
 
   useEffect(() => {
     if (lastPostRef.current instanceof HTMLElement) {
