@@ -64,7 +64,7 @@ export default function PostByCategory() {
         refetch();
       }
     }
-  }, [category]);
+  }, [category, currentCategory, isStale, refetch]);
 
   // 카테고리가 같으며 캐시된 데이터가 남아있을때 렌더링 처리 작업.
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function PostByCategory() {
       setLoading(false);
       setLength(listLength);
     }
-  }, []);
+  }, [category, currentCategory, data]);
 
   // ref가 포커싱 될 때 다음 페이지 데이터 fetching.
   const handleObserver = useCallback(
@@ -92,18 +92,19 @@ export default function PostByCategory() {
 
   // 옵저버 등록
   useEffect(() => {
-    if (lastPostRef.current instanceof HTMLElement === true) {
+    const lastNode = lastPostRef;
+    if (lastNode.current instanceof HTMLElement === true) {
       const observer: IntersectionObserver = new IntersectionObserver(
         handleObserver,
         {
           threshold: 0,
         }
       );
-      const lastElement: Element = lastPostRef.current;
+      const lastElement: Element = lastNode.current;
 
       observer.observe(lastElement);
       return () => {
-        if (observer.current && lastPostRef.current) {
+        if (observer.current && lastNode.current) {
           observer.unobserve(lastElement);
         }
       };
@@ -111,7 +112,7 @@ export default function PostByCategory() {
   }, [loading, handleObserver]);
 
   const getCategoryIcon = useMemo(() => {
-    return (category: string) => {
+    const categoryComponent = (category: string) => {
       switch (category) {
         case "직장": {
           return <BusinessIcon />;
@@ -127,8 +128,9 @@ export default function PostByCategory() {
         }
       }
     };
+    categoryComponent.displayName = "getCategoryIcon";
+    return categoryComponent;
   }, []);
-
   return (
     <Box>
       {loading ? (

@@ -57,7 +57,7 @@ export default function Posts({ posts }) {
       });
       setLoading(false);
     }
-  }, []);
+  }, [isStale, data?.pages]);
   const handleObserver = useCallback(
     (entries) => {
       const [target] = entries;

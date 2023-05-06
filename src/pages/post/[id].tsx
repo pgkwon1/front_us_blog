@@ -1,5 +1,6 @@
 import styled from "../../styles/posts/Posts.module.css";
 import { Box, Chip, ListItem, Typography } from "@mui/material";
+import { Avatar } from "@mui/joy";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -77,7 +78,7 @@ export default function PostView() {
         });
       }
     });
-  }, [post]);
+  }, [post, refetch, userId]);
   return (
     <Box className={styled.postWrap}>
       {post ? (

@@ -80,7 +80,7 @@ export default function PostbyTag() {
         setLoading(false);
       });
     }
-  }, []);
+  }, [isStale, currentTag, data?.pages, refetch]);
 
   useEffect(() => {
     if (lastPostRef.current instanceof HTMLElement) {

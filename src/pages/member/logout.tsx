@@ -10,5 +10,5 @@ export default function Logout() {
     dispatch(setCurrentUserId(""));
     localStorage.removeItem("token");
     push("/");
-  }, []);
+  }, [dispatch, push]);
 }
