@@ -1,4 +1,4 @@
-import Posts from "@/components/blog/posts";
+import Posts from "@/components/post/posts";
 import { Box } from "@mui/material";
 import Link from "next/link";
 

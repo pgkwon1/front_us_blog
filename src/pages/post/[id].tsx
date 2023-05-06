@@ -15,7 +15,7 @@ import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
 import Link from "next/link";
 import moment from "moment-timezone";
-import Like from "@/components/blog/like";
+import Like from "@/components/post/like";
 import { useSelector } from "react-redux";
 
 export default function PostView() {

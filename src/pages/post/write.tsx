@@ -20,7 +20,7 @@ import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 
 const TextEditor = dynamic(
-  async () => await import("@/components/blog/editor"),
+  async () => await import("@/components/post/editor"),
   {
     ssr: false,
   }
