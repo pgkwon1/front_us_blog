@@ -7,6 +7,5 @@
   ],
   "framework": "nextjs",
   "devCommand": "next dev",
-  "outputDirectory": "dist",
   "installCommand": "npm install"
 }
