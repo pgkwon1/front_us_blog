@@ -2,9 +2,11 @@
   "redirects": [
     {
       "source": "/api/:path*",
-      "destination": "http://3.39.222.57:4001/:path*"
+      "destination": "https://usblog.sharepl.net/:path*"
     }
   ],
   "framework": "nextjs",
-  "devCommand": "next dev"
+  "devCommand": "next dev",
+  "outputDirectory": "dist",
+  "installCommand": "npm install"
 }
