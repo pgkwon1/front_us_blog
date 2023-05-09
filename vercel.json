@@ -1,8 +1,10 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/api/:path*",
       "destination": "http://3.39.222.57:4001/:path*"
     }
-  ]
+  ],
+  "framework": "nextjs",
+  "devCommand": "next dev"
 }
