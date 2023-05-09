@@ -9,7 +9,10 @@ const rootReducer = combineReducers({
   postReducer,
 });
 const persistConfig = {
-  key: process.env.NEXT_PUBLIC_REDUX_PERSIST_KEY,
+  key:
+    process.env.NEXT_PUBLIC_REDUX_PERSIST_KEY !== undefined
+      ? process.env.NEXT_PUBLIC_REDUX_PERSIST_KEY
+      : "",
   storage,
   whitelist: ["userReducer", "postReducer"],
 };

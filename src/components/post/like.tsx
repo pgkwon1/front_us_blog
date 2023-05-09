@@ -9,11 +9,17 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import styled from "@/styles/posts/Posts.module.css";
-export default function Like({ likes, unlikes, likeProp }) {
+import { IRootState } from "../dto/ReduxDto";
+interface ILikeProps {
+  likes: number;
+  unlikes: number;
+  likeProp: { like: boolean; unlike: boolean };
+}
+export default function Like({ likes, unlikes, likeProp }: ILikeProps) {
   const router = useRouter();
   const { id } = router.query;
-  const likeRef = useRef(null);
-  const unlikeRef = useRef(null);
+  const likeRef = useRef<HTMLButtonElement>(null);
+  const unlikeRef = useRef<HTMLButtonElement>(null);
 
   const [likeInfo, setLikeInfo] = useState({
     isLike: false,
@@ -33,8 +39,8 @@ export default function Like({ likes, unlikes, likeProp }) {
       };
     });
   }, [likes, unlikes, likeProp]);
-  const { userId } = useSelector((state) => state.userReducer);
-  const handleLike = async (): void => {
+  const { userId } = useSelector((state: IRootState) => state.userReducer);
+  const handleLike = async (): Promise<void> => {
     await addLikeMutation.mutate();
     if (likeRef.current !== null) {
       likeRef.current.classList.add(styled.likeOn);
@@ -49,7 +55,7 @@ export default function Like({ likes, unlikes, likeProp }) {
       };
     });
   };
-  const handleUnLike = async (): void => {
+  const handleUnLike = async (): Promise<void> => {
     await addUnlikeMutation.mutate();
     if (unlikeRef.current !== null) {
       unlikeRef.current.classList.add(styled.unlikeOn);
@@ -64,7 +70,7 @@ export default function Like({ likes, unlikes, likeProp }) {
     });
   };
 
-  const handleLikeCancel = async (type: string): void => {
+  const handleLikeCancel = async (type: string): Promise<void> => {
     await likeCancelMutation.mutate(type);
 
     if (type === "LIKE") {
@@ -76,7 +82,7 @@ export default function Like({ likes, unlikes, likeProp }) {
           isLike: false,
         };
       });
-      likeRef.current.classList.remove("likeOn");
+      likeRef.current?.classList.remove("likeOn");
     } else if (type === "UNLIKE") {
       setLikeInfo((current) => {
         const { unlikeNum } = current;
@@ -86,24 +92,24 @@ export default function Like({ likes, unlikes, likeProp }) {
           isUnlike: false,
         };
       });
-      unlikeRef.current.classList.remove("unlikeOn");
+      unlikeRef.current?.classList.remove("unlikeOn");
     }
   };
 
-  const addLike = async (): void => {
+  const addLike = async (): Promise<void> => {
     await frontApi.post(`/like/like`, {
       postId: id,
       userId,
     });
   };
-  const addUnLike = async (): void => {
+  const addUnLike = async (): Promise<void> => {
     await frontApi.post(`/like/unlike`, {
       postId: id,
       userId,
     });
   };
 
-  const likeCancel = async (type: string): void => {
+  const likeCancel = async (type: string): Promise<void> => {
     await frontApi.post(`/like/likeCancel`, {
       type,
       postId: id,
@@ -111,12 +117,8 @@ export default function Like({ likes, unlikes, likeProp }) {
     });
   };
 
-  const addLikeMutation = useMutation("addLike", addLike, {
-    mutationKey: "addLike",
-  });
-  const addUnlikeMutation = useMutation("addUnLike", addUnLike, {
-    mutationKey: "addUnLike",
-  });
+  const addLikeMutation = useMutation("addLike", addLike);
+  const addUnlikeMutation = useMutation("addUnLike", addUnLike);
 
   const likeCancelMutation = useMutation(likeCancel, {
     mutationKey: "likeCancel",
@@ -125,7 +127,10 @@ export default function Like({ likes, unlikes, likeProp }) {
     <Box className={styled.likeWrap}>
       <Box className={styled.like}>
         <Button
-          className={[styled.likeButton, likeInfo.isLike ? styled.likeOn : ""]}
+          component="button"
+          className={`${styled.likeButton} ${
+            likeInfo.isLike ? styled.likeOn : ""
+          }`}
           ref={likeRef}
           onClick={
             likeInfo.isLike ? () => handleLikeCancel("LIKE") : handleLike
@@ -134,11 +139,12 @@ export default function Like({ likes, unlikes, likeProp }) {
           <ArrowUpwardIcon /> {likeInfo.likeNum}
         </Button>
         <Button
+          component="button"
           sx={{ color: "black", fontSize: "18px;" }}
-          className={[
-            styled.likeButton,
-            likeInfo.isUnlike ? styled.unlikeOn : "",
-          ]}
+          className={`
+            ${styled.likeButton},
+            ${likeInfo.isUnlike ? styled.unlikeOn : ""},
+          `}
           ref={unlikeRef}
           onClick={
             likeInfo.isUnlike ? () => handleLikeCancel("UNLIKE") : handleUnLike
@@ -149,14 +155,4 @@ export default function Like({ likes, unlikes, likeProp }) {
       </Box>
     </Box>
   );
-}
-
-export function getServerSideProps(): GetServerSideProps {
-  apiClient.prefetchQuery("getLike", async () => await getLike());
-
-  return {
-    props: {
-      dehydrateState: dehydrate(apiClient),
-    },
-  };
 }

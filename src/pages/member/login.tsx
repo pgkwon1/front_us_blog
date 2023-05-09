@@ -7,13 +7,20 @@ import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { IRootState } from "@/components/dto/ReduxDto";
+import { ILoginDto, ILoginErrorDto } from "@/components/dto/users/LoginDto";
+import { isError } from "react-query";
 
 export default function Login() {
   const { push } = useRouter();
-  const [userId, setUserId] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [loginInfo, setLoginInfo] = useState<ILoginDto>({
+    userId: "",
+    password: "",
+  });
+  const [errorInfo, setErrorInfo] = useState<ILoginErrorDto>({
+    isError: false,
+    errorMsg: "",
+  });
+
   const dispatch = useDispatch();
 
   const { login_state } = useSelector((state: IRootState) => state.userReducer);
@@ -23,33 +30,58 @@ export default function Login() {
   }
 
   const handleLogin = async () => {
-    const { data }: object = await frontApi.post("/member/login", {
-      userId,
-      password,
+    const { data } = await frontApi.post("/member/login", {
+      userId: loginInfo.userId,
+      password: loginInfo.password,
     });
     if (data.token) {
       localStorage.setItem("token", data.token);
       dispatch(setLoginState(1));
-      dispatch(setCurrentUserId(userId));
-      setError(false);
-      push("/");
+      dispatch(setCurrentUserId(loginInfo.userId));
+      setErrorInfo((current: ILoginErrorDto) => {
+        return {
+          ...current,
+          isError: false,
+        };
+      });
+      //push("/");
     } else if (data.error === true && data.message) {
-      setError(true);
-      setErrorMsg(data.message);
+      setErrorInfo({
+        isError: true,
+        errorMsg: data.message,
+      });
     }
   };
 
   return (
     <Box className={styled.loginWrap}>
       <Box className={styled.loginBox}>
-        {error ? <Alert severity="error">{errorMsg}</Alert> : ""}
+        {errorInfo.isError ? (
+          <Alert severity="error">{errorInfo.errorMsg}</Alert>
+        ) : (
+          ""
+        )}
         <TextField
-          onChange={(e) => setUserId(e.target.value)}
+          onChange={(e) =>
+            setLoginInfo((current) => {
+              return {
+                ...current,
+                userId: e.target.value,
+              };
+            })
+          }
           label="ID"
           variant="standard"
         />
         <TextField
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>
+            setLoginInfo((current) => {
+              return {
+                ...current,
+                password: e.target.value,
+              };
+            })
+          }
           label="PASSWORD"
           variant="standard"
         />

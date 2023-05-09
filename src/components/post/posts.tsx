@@ -1,22 +1,32 @@
-import { Box, Chip, ListItem, Skeleton } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import { dehydrate, useInfiniteQuery } from "react-query";
+import Link from "next/link";
+import Error from "next/error";
+
+import { Box, Chip, ListItem, Skeleton, SvgIconProps } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import CodeIcon from "@mui/icons-material/Code";
 import CoffeeIcon from "@mui/icons-material/Coffee";
+import PersonIcon from "@mui/icons-material/Person";
 import styled from "../../styles/posts/Posts.module.css";
-import { IPostDto } from "../dto/PostDto";
-import Link from "next/link";
-import frontApi from "@/modules/apiInstance";
-import { GetServerSideProps } from "next";
-import { dehydrate, useInfiniteQuery } from "react-query";
-import apiClient from "@/modules/reactQueryInstance";
+
 import moment from "moment-timezone";
-export default function Posts({ posts }) {
+
+import {
+  Category,
+  IPostByIndexPage,
+  IPostByTags,
+  IPostDto,
+} from "../dto/PostDto";
+import frontApi from "@/modules/apiInstance";
+import apiClient from "@/modules/reactQueryInstance";
+
+export default function Posts() {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const lastPostRef = useRef(null);
+  const lastPostRef = useRef<HTMLDivElement>(null);
   useEffect(() => {}, []);
-  const getPostList = async (page: number): Promise<Array<object>> => {
+  const getPostList = async (page: number): Promise<IPostByIndexPage> => {
     page = page ?? 1;
     const result = await frontApi.get(`/page/${page}`);
     setPostList((prevList) => prevList.concat(result.data.postList));
@@ -24,24 +34,14 @@ export default function Posts({ posts }) {
     return result.data;
   };
 
-  const getCategoryIcon = (category) => {
-    switch (category) {
-      case "직장":
-        return <BusinessIcon />;
-      case "잡담":
-        return <CoffeeIcon />;
-      case "기술":
-        return <CodeIcon />;
-    }
-  };
-
   const { data, isSuccess, hasNextPage, fetchNextPage, isStale } =
-    useInfiniteQuery(
+    useInfiniteQuery<IPostByIndexPage, Error, IPostByIndexPage>(
       "postList",
       ({ pageParam = 1 }) => getPostList(pageParam),
       {
-        getNextPageParam: (lastPage, allPages) => {
-          const nextPage = allPages.length + 1;
+        getNextPageParam: (lastPage: IPostByIndexPage, allPages) => {
+          const nextPage: any = allPages.length + 1;
+
           return lastPage.postList.length !== 0 ? nextPage : undefined;
         },
         staleTime: 120 * 1000,
@@ -52,14 +52,14 @@ export default function Posts({ posts }) {
   // staletime(데이터만료시간) 이 안지났을 경우 캐시된 데이터로 렌더링.
   useEffect(() => {
     if (isStale === false) {
-      data?.pages.map((page, index) => {
-        setPostList((prevList, index) => prevList.concat(page.postList));
+      data?.pages.map((page: any) => {
+        setPostList((prevList) => prevList.concat(page.postList));
       });
       setLoading(false);
     }
   }, [isStale, data?.pages]);
   const handleObserver = useCallback(
-    (entries) => {
+    (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
       // target이 포커싱 되었을때 불러올 데이터가 있을때
       if (target.isIntersecting && hasNextPage) {
@@ -79,11 +79,29 @@ export default function Posts({ posts }) {
       const observer = new IntersectionObserver(handleObserver, {
         threshold: 0,
       });
-      observer.observe(lastElement);
-      return () => observer.unobserve(lastElement);
+      if (lastElement !== null) observer.observe(lastElement);
+      return () => {
+        if (lastElement !== null) observer.unobserve(lastElement);
+      };
     }
   }, [loading, fetchNextPage, hasNextPage, handleObserver]);
 
+  const getCategoryIcon = (category: Category): ReactElement<SvgIconProps> => {
+    switch (category) {
+      case "직장": {
+        return <BusinessIcon />;
+      }
+      case "잡담": {
+        return <CoffeeIcon />;
+      }
+      case "기술": {
+        return <CodeIcon />;
+      }
+      default: {
+        return <PersonIcon />;
+      }
+    }
+  };
   return (
     <Box>
       {loading ? (
@@ -98,7 +116,7 @@ export default function Posts({ posts }) {
                     <Box className={styled.postCategory}>
                       <Chip
                         icon={getCategoryIcon(post.category)}
-                        label={post.category}
+                        label={String(post.category)}
                       ></Chip>
                     </Box>
                     <Box className={styled.postTitle}>{post.title}</Box>
@@ -110,7 +128,7 @@ export default function Posts({ posts }) {
 
                   <Box className={styled.postDescription}>
                     <Box className={styled.postTag} component="ul">
-                      {post.Tags?.map((tag: string, index: number) => {
+                      {post.Tags?.map((tag: IPostByTags, index: number) => {
                         return (
                           <Link key={index} href={`/post/tag/${tag.tagName}`}>
                             <ListItem className={styled.tagWrap}>
@@ -125,10 +143,7 @@ export default function Posts({ posts }) {
                       })}
                     </Box>
                     <Box
-                      className={[
-                        styled.postDescription,
-                        styled.postBottomDescription,
-                      ]}
+                      className={`${styled.postDescription} ${styled.postBottomDescription}`}
                     >
                       <Box className={styled.like}>좋아요 {post.like}개 </Box>
                       <Box className={styled.createdAt}>
@@ -147,8 +162,13 @@ export default function Posts({ posts }) {
   );
 }
 
-export async function getServerSideProps(): GetServerSideProps {
-  await apiClient.prefetchQuery("getPostList", async () => await getPostList());
+export async function getServerSideProps(context: any) {
+  const { page } = context.query;
+
+  await apiClient.prefetchQuery(
+    "getPostList",
+    async () => await frontApi.get(`/page/${page}`)
+  );
 
   return {
     props: {

@@ -1,33 +1,38 @@
-import { Box, Chip, ListItem, Skeleton } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
-import BusinessIcon from "@mui/icons-material/Business";
-import CodeIcon from "@mui/icons-material/Code";
-import CoffeeIcon from "@mui/icons-material/Coffee";
-import styled from "@/styles/posts/Posts.module.css";
-import { IPostDto } from "../dto/PostDto";
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import frontApi from "@/modules/apiInstance";
-import { GetServerSideProps } from "next";
+import { GetServerSidePropsContext } from "next";
 import { dehydrate, useInfiniteQuery } from "react-query";
-import apiClient from "@/modules/reactQueryInstance";
-import moment from "moment-timezone";
 import { useRouter } from "next/router";
 import { ThreeDots } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
+
+import { Box, Chip, ListItem, SvgIconProps } from "@mui/material";
+import BusinessIcon from "@mui/icons-material/Business";
+import CodeIcon from "@mui/icons-material/Code";
+import CoffeeIcon from "@mui/icons-material/Coffee";
+import PersonIcon from "@mui/icons-material/Person";
+import styled from "@/styles/posts/Posts.module.css";
+
+import { Category, IPostByTagPage, IPostDto } from "@/components/dto/PostDto";
+import frontApi from "@/modules/apiInstance";
+import apiClient from "@/modules/reactQueryInstance";
 import { setCurrentTag } from "@/store/reducers/post";
 import { IRootState } from "@/components/dto/ReduxDto";
+
+import moment from "moment-timezone";
+import Error from "next/error";
 
 export default function PostbyTag() {
   const router = useRouter();
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [length, setLength] = useState(0);
-  const lastPostRef = useRef(null);
+  const lastPostRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const { tag } = router.query;
   const { currentTag } = useSelector((state: IRootState) => state.postReducer);
 
-  async function getPostByTag(page) {
+  async function getPostByTag(page: number) {
     const result = await frontApi.get(`/post/tag/${tag}/${page}`);
     dispatch(setCurrentTag(tag));
     setPostList((prevList) => prevList.concat(result.data.postList));
@@ -36,30 +41,25 @@ export default function PostbyTag() {
     return result.data;
   }
 
-  const {
-    isLoading,
-    data,
-    isSuccess,
-    refetch,
-    hasNextPage,
-    fetchNextPage,
-    isStale,
-  } = useInfiniteQuery(
-    "getPostByTag",
-    ({ pageParam = 1 }) => getPostByTag(pageParam),
+  const { data, refetch, hasNextPage, fetchNextPage, isStale } =
+    useInfiniteQuery<IPostByTagPage, Error, IPostByTagPage>(
+      "getPostByTag",
+      ({ pageParam = 1 }) => getPostByTag(pageParam),
 
-    {
-      getNextPageParam(lastPage, allPages) {
-        const nextPage = allPages.length + 1;
-        return lastPage.postList.length !== 0 ? nextPage : undefined;
-      },
-      staleTime: 120 * 1000,
-      cacheTime: 120 * 1000,
-    }
-  );
+      {
+        getNextPageParam(lastPage: IPostByTagPage, allPages) {
+          const nextPage = allPages.length + 1;
+          if ("postList" in lastPage && lastPage.postList.length !== 0)
+            return nextPage;
+          else undefined;
+        },
+        staleTime: 120 * 1000,
+        cacheTime: 120 * 1000,
+      }
+    );
 
   const handleObserver = useCallback(
-    (entries) => {
+    (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
 
       if (target.isIntersecting && hasNextPage) {
@@ -76,7 +76,7 @@ export default function PostbyTag() {
         refetch();
       }
       data?.pages.map((post) => {
-        setPostList((prevList) => prevList.concat(post.postList));
+        setPostList((prevList: any) => prevList.concat(post.postList));
         setLoading(false);
       });
     }
@@ -92,7 +92,7 @@ export default function PostbyTag() {
       return () => observer.unobserve(lastElement);
     }
   }, [loading, fetchNextPage, hasNextPage, handleObserver]);
-  const getCategoryIcon = (category: string) => {
+  const getCategoryIcon = (category: Category): ReactElement<SvgIconProps> => {
     switch (category) {
       case "직장": {
         return <BusinessIcon />;
@@ -102,6 +102,9 @@ export default function PostbyTag() {
       }
       case "기술": {
         return <CodeIcon />;
+      }
+      default: {
+        return <PersonIcon />;
       }
     }
   };
@@ -116,7 +119,6 @@ export default function PostbyTag() {
           visible={true}
           wrapperStyle={{ justifyContent: "center" }}
           ariaLabel="oval-loading"
-          secondaryColor="#4fa94d"
         />
       ) : (
         <Box className={styled.postWrap}>
@@ -128,7 +130,7 @@ export default function PostbyTag() {
                     <Box className={styled.postCategory}>
                       <Chip
                         icon={getCategoryIcon(post.category)}
-                        label={post.category}
+                        label={String(post.category)}
                       ></Chip>
                     </Box>
                     <Box className={styled.postTitle}>{post.title}</Box>
@@ -140,25 +142,24 @@ export default function PostbyTag() {
 
                   <Box className={styled.postDescription}>
                     <Box className={styled.postTag} component="ul">
-                      {post.Tags?.map((tag: string, index: number) => {
-                        return (
-                          <Link href={`/post/tag/${tag.tagName}`} key={index}>
-                            <ListItem className={styled.tagWrap}>
-                              <Chip
-                                className={styled.tag}
-                                variant="outlined"
-                                label={"# " + tag.tagName}
-                              ></Chip>
-                            </ListItem>
-                          </Link>
-                        );
-                      })}
+                      {post.Tags?.map(
+                        (tag: { tagName: string }, index: number) => {
+                          return (
+                            <Link href={`/post/tag/${tag.tagName}`} key={index}>
+                              <ListItem className={styled.tagWrap}>
+                                <Chip
+                                  className={styled.tag}
+                                  variant="outlined"
+                                  label={"# " + tag.tagName}
+                                ></Chip>
+                              </ListItem>
+                            </Link>
+                          );
+                        }
+                      )}
                     </Box>
                     <Box
-                      className={[
-                        styled.postDescription,
-                        styled.postBottomDescription,
-                      ]}
+                      className={`${styled.postDescription} ${styled.postBottomDescription}`}
                     >
                       <Box className={styled.like}>좋아요 {post.like}개 </Box>
                       <Box className={styled.createdAt}>
@@ -177,8 +178,12 @@ export default function PostbyTag() {
   );
 }
 
-export async function getServerSideProps(): GetServerSideProps {
-  apiClient.prefetchQuery("getPostByTag", async () => await getPostByTag());
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { tag, page } = context.query;
+  apiClient.prefetchQuery(
+    "getPostByTag",
+    async () => (await frontApi.get(`/post/tag/${tag}/${page}`)).data.post
+  );
   return {
     props: {
       dehydrateState: dehydrate(apiClient),

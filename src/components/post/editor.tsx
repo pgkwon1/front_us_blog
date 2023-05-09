@@ -18,7 +18,7 @@ const Editor = forwardRef(function Editor({
     languages: ["javascript", "ruby", "python", "rust"],
   });
 
-  const changeContents = (contents) => {
+  const changeContents = (contents: string) => {
     handleContents(contents);
   };
   const modules = useMemo(() => {
@@ -75,7 +75,8 @@ const Editor = forwardRef(function Editor({
         value={value}
         formats={formats}
         onChange={(_content, _delta, _source, editor) => {
-          changeContents(editor.getHTML());
+          const contents: string = editor.getHTML();
+          changeContents(contents);
           setValue(editor.getHTML());
         }}
       />

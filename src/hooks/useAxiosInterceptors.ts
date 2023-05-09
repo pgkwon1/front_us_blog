@@ -1,4 +1,3 @@
-import { apiContext } from "@/context/ApiContext";
 import axios from "axios";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";

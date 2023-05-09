@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { GetServerSideProps } from "next";
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { dehydrate, useInfiniteQuery } from "react-query";
@@ -8,16 +8,18 @@ import { setCurrentCategory } from "@/store/reducers/post";
 
 import moment from "moment-timezone";
 
-import { Box, Chip, ListItem } from "@mui/material";
+import { Box, Chip, ListItem, SvgIconProps } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import CodeIcon from "@mui/icons-material/Code";
 import CoffeeIcon from "@mui/icons-material/Coffee";
+import PersonIcon from "@mui/icons-material/Person";
 import { ThreeDots } from "react-loader-spinner";
 
 import styled from "@/styles/posts/Posts.module.css";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { IRootState } from "@/components/dto/ReduxDto";
+import { Category, IPostByTags, IPostDto } from "@/components/dto/PostDto";
 
 export default function PostByCategory() {
   const [postList, setPostList] = useState([]);
@@ -25,7 +27,7 @@ export default function PostByCategory() {
   const [length, setLength] = useState(0);
   const router = useRouter();
   const { category } = router.query;
-  const lastPostRef = useRef(null);
+  const lastPostRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const { currentCategory } = useSelector(
     (state: IRootState) => state.postReducer
@@ -84,7 +86,7 @@ export default function PostByCategory() {
 
   // ref가 포커싱 될 때 다음 페이지 데이터 fetching.
   const handleObserver = useCallback(
-    (entries) => {
+    (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
       if (target.isIntersecting && hasNextPage) {
         fetchNextPage();
@@ -95,45 +97,38 @@ export default function PostByCategory() {
 
   // 옵저버 등록
   useEffect(() => {
-    const lastNode = lastPostRef;
-    if (lastNode.current instanceof HTMLElement === true) {
+    if (lastPostRef.current instanceof HTMLElement === true) {
+      const lastElement = lastPostRef.current;
       const observer: IntersectionObserver = new IntersectionObserver(
         handleObserver,
         {
           threshold: 0,
         }
       );
-      const lastElement: Element = lastNode.current;
 
-      observer.observe(lastElement);
+      if (lastElement !== null) observer.observe(lastElement);
       return () => {
-        if (observer.current && lastNode.current) {
-          observer.unobserve(lastElement);
-        }
+        if (lastElement !== null) observer.unobserve(lastElement);
       };
     }
   }, [loading, handleObserver]);
 
-  const getCategoryIcon = useMemo(() => {
-    const categoryComponent = (category: string) => {
-      switch (category) {
-        case "직장": {
-          return <BusinessIcon />;
-        }
-        case "잡담": {
-          return <CoffeeIcon />;
-        }
-        case "기술": {
-          return <CodeIcon />;
-        }
-        default: {
-          return null;
-        }
+  const getCategoryIcon = (category: Category): ReactElement<SvgIconProps> => {
+    switch (category) {
+      case "직장": {
+        return <BusinessIcon />;
       }
-    };
-    categoryComponent.displayName = "getCategoryIcon";
-    return categoryComponent;
-  }, []);
+      case "잡담": {
+        return <CoffeeIcon />;
+      }
+      case "기술": {
+        return <CodeIcon />;
+      }
+      default: {
+        return <PersonIcon />;
+      }
+    }
+  };
   return (
     <Box>
       {loading ? (
@@ -144,7 +139,6 @@ export default function PostByCategory() {
           visible={true}
           wrapperStyle={{ justifyContent: "center" }}
           ariaLabel="oval-loading"
-          secondaryColor="#4fa94d"
         />
       ) : (
         <Box className={styled.postWrap}>
@@ -156,7 +150,7 @@ export default function PostByCategory() {
                     <Box className={styled.postCategory}>
                       <Chip
                         icon={getCategoryIcon(post.category)}
-                        label={post.category}
+                        label={String(post.category)}
                       ></Chip>
                     </Box>
                     <Box className={styled.postTitle}>{post.title}</Box>
@@ -168,7 +162,7 @@ export default function PostByCategory() {
 
                   <Box className={styled.postDescription}>
                     <Box className={styled.postTag} component="ul">
-                      {post.Tags?.map((tag: string, index: number) => {
+                      {post.Tags?.map((tag: IPostByTags, index: number) => {
                         return (
                           <Link href={`/post/tag/${tag.tagName}`} key={index}>
                             <ListItem className={styled.tagWrap}>
@@ -183,10 +177,7 @@ export default function PostByCategory() {
                       })}
                     </Box>
                     <Box
-                      className={[
-                        styled.postDescription,
-                        styled.postBottomDescription,
-                      ]}
+                      className={`${styled.postDescription} ${styled.postBottomDescription}`}
                     >
                       <Box className={styled.like}>좋아요 {post.like}개 </Box>
                       <Box className={styled.createdAt}>
@@ -204,10 +195,11 @@ export default function PostByCategory() {
     </Box>
   );
 }
-export async function getServerSideProps(): GetServerSideProps {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { category, page } = context.query;
   apiClient.prefetchInfiniteQuery(
     "getPostByCategory",
-    async () => await getPostByCategory()
+    async () => await frontApi.get(`/post/category/${category}/${page}`)
   );
   return {
     props: {

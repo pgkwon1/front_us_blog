@@ -12,13 +12,18 @@ import {
 import styled from "../../styles/posts/Posts.module.css";
 import dynamic from "next/dynamic";
 import { WithContext as ReactTags } from "react-tag-input";
-import { useContext, useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { IPostWriteForm } from "@/components/dto/PostDto";
+import {
+  IAddTagDto,
+  IPostByTags,
+  IPostWriteForm,
+} from "@/components/dto/PostDto";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { IRootState } from "@/components/dto/ReduxDto";
+import ReactQuill from "react-quill";
 
 const TextEditor = dynamic(
   async () => await import("@/components/post/editor"),
@@ -37,7 +42,7 @@ export default function PostWrite() {
     defaultValues: {
       title: "",
       contents: "",
-      tags: [],
+      tags: [] as IAddTagDto[],
     },
   });
   const author = useSelector((state: IRootState) => state.userReducer.userId);
@@ -45,11 +50,11 @@ export default function PostWrite() {
   const [writeData, setWriteData] = useState({
     author,
     title: "",
-    tags: [],
+    tags: [] as IAddTagDto[],
     category: "",
     contents: "",
   });
-  const editorRef = useRef(null);
+  const editorRef = useRef<ReactQuill>(null);
   const { push } = useRouter();
   const KeyCodes = {
     comma: 188,
@@ -58,15 +63,17 @@ export default function PostWrite() {
 
   const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
-  const handleContents = (contents) => {
+  const handleContents = (contents: string) => {
     setWriteData({
       ...writeData,
       ["contents"]: contents,
     });
   };
-  const addTag = (addTag) => {
+  const addTag = (addTag: { id: string; text: string }) => {
     const { tags } = writeData;
-    const findTag = tags.filter((tag) => tag.tagName === addTag.text);
+    const findTag = tags.filter(
+      (tag: IAddTagDto) => tag.tagName === addTag.text
+    );
     if (findTag.length === 0 && tags.length < 5) {
       setWriteData({
         ...writeData,
@@ -75,8 +82,8 @@ export default function PostWrite() {
     }
   };
   const deleteTag = (deleteIndex: number) => {
-    const tagList = tags.filter(
-      (tag: object, index: number) => deleteIndex !== index
+    const tagList = writeData.tags.filter(
+      (tag, index: number) => deleteIndex !== index
     );
     setWriteData({
       ...writeData,
@@ -94,7 +101,7 @@ export default function PostWrite() {
   };
 
   const onSubmit = async () => {
-    const contents = editorRef?.current.value;
+    const contents = editorRef.current !== null ? editorRef.current.value : "";
     if (contents === "") {
       setContentsErr(true);
       return false;
@@ -157,7 +164,7 @@ export default function PostWrite() {
         <TextEditor editorRef={editorRef} handleContents={handleContents} />
         {contentsErr ? <Alert severity="error">내용을 입력해주세요</Alert> : ""}
         <Box className={styled.postTag} component="ul">
-          {writeData.tags.map((tag, index) => {
+          {writeData.tags.map((tag: IAddTagDto, index) => {
             return (
               <ListItem className={styled.tagWrap} key={index}>
                 <Chip
@@ -176,6 +183,7 @@ export default function PostWrite() {
         <ReactTags
           delimiters={delimiters}
           handleAddition={addTag}
+          handleDelete={(i) => i}
           inputFieldPosition="bottom"
           autocomplete
           placeholder="#태그입력"

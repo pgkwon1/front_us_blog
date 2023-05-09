@@ -2,7 +2,7 @@ import styled from "../../styles/posts/Posts.module.css";
 import { Box, Chip, ListItem, Typography } from "@mui/material";
 import { Avatar } from "@mui/joy";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import CodeIcon from "@mui/icons-material/Code";
 import CoffeeIcon from "@mui/icons-material/Coffee";
@@ -10,7 +10,7 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
 import { dehydrate, useQuery } from "react-query";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
 import Link from "next/link";
@@ -18,9 +18,26 @@ import moment from "moment-timezone";
 import Like from "@/components/post/like";
 import { useSelector } from "react-redux";
 import { IRootState } from "@/components/dto/ReduxDto";
+import {
+  Category,
+  IPostByIdPage,
+  IPostByLikes,
+  IPostByTags,
+} from "@/components/dto/PostDto";
 
 export default function PostView() {
-  const [post, setPost] = useState({});
+  const [post, setPost] = useState<IPostByIdPage>({
+    id: "",
+    author: "",
+    Tags: [],
+    postsLikes: [],
+    category: "기술",
+    title: "",
+    contents: "",
+    like: 0,
+    unlike: 0,
+    createdAt: new Date(),
+  });
   const [likeInfo, setLikeInfo] = useState({
     like: false,
     unlike: false,
@@ -33,36 +50,43 @@ export default function PostView() {
     languages: ["javascript", "ruby", "python", "rust"],
   });
 
-  const getPost = async (): Promise<object> => {
+  const getPost = async (): Promise<IPostByIdPage> => {
     const result = await frontApi.get(`/post/${id}`);
-    return result;
+    return result.data.post;
   };
 
-  const { isLoading, data, isStale, refetch } = useQuery("getPost", getPost, {
-    staleTime: 10 * 1000,
-    cacheTime: 10 * 1000,
-  });
+  const { isLoading, data, isStale, refetch } = useQuery<IPostByIdPage>(
+    "getPost",
+    getPost,
+    {
+      staleTime: 10 * 1000,
+      cacheTime: 10 * 1000,
+    }
+  );
 
-  if (isStale === false && data.data.post.id !== id) {
+  if (isStale === false && data?.id !== id) {
     refetch();
   }
 
-  const getCategoryIcon = (category) => {
-    switch (category) {
-      case "직장":
-        return <BusinessIcon />;
-      case "기술":
-        return <CodeIcon />;
-      case "잡담":
-        return <CoffeeIcon />;
-    }
-  };
+  const getCategoryIcon = useMemo(() => {
+    // eslint-disable-next-line react/display-name
+    return (category: string) => {
+      switch (category) {
+        case "직장":
+          return <BusinessIcon />;
+        case "기술":
+          return <CodeIcon />;
+        case "잡담":
+          return <CoffeeIcon />;
+      }
+    };
+  }, []);
   useEffect(() => {
-    !isLoading && setPost(data.data.post);
+    data && setPost(data);
   }, [isLoading, data]);
 
   useEffect(() => {
-    post.postsLikes?.map((like) => {
+    post.postsLikes?.map((like: IPostByLikes) => {
       if (like.type === "LIKE" && like.userId === userId) {
         setLikeInfo((current) => {
           return {
@@ -120,7 +144,7 @@ export default function PostView() {
 
           <Box className={styled.postDescription}>
             <Box className={styled.postTag} component="ul">
-              {post.Tags?.map((tag: string, index: number) => {
+              {post.Tags?.map((tag: IPostByTags, index: number) => {
                 return (
                   <Link href={`/post/tag/${tag.tagName}`} key={index}>
                     <ListItem className={styled.tagWrap}>
@@ -137,7 +161,7 @@ export default function PostView() {
           </Box>
           <Like likes={post.like} unlikes={post.unlike} likeProp={likeInfo} />
           <Box
-            className={[styled.postDescription, styled.postBottomDescription]}
+            className={`${styled.postDescription} ${styled.postBottomDescription}`}
           >
             <Box className={styled.like}>좋아요 {post.like}개 </Box>
             <Box className={styled.createdAt}>
@@ -152,8 +176,12 @@ export default function PostView() {
   );
 }
 
-export async function getServerSideProps(): GetServerSideProps {
-  await apiClient.prefetchQuery(["getPost"], async () => await getPost());
+export async function getServerSideProps(context: any) {
+  const { id } = context.query;
+  await apiClient.prefetchQuery("getPost", async () => {
+    const result = await frontApi.get(`/post/${id}`);
+    return result.data.post;
+  });
 
   return {
     props: {

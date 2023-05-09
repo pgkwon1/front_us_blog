@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import Cookies from "js-cookie";
 
-const frontApi = axios.create({
+const frontApi: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_FRONT_API_URL,
   withCredentials: true,
   headers: {
