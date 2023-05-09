@@ -2,10 +2,14 @@
 const nextConfig = {
   reactStrictMode: false,
   async rewrites() {
+    const destination =
+      process.env.NEXT_PUBLIC_MODE === "DEV"
+        ? process.env.NEXT_PUBLIC_DEV_API_URL
+        : process.env.NEXT_PUBLIC_PRODUCT_API_URL;
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:3001/:path*",
+        destination: `${destination}/:path*`,
       },
     ];
   },
