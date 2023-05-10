@@ -21,6 +21,7 @@ import { IRootState } from "@/components/dto/ReduxDto";
 
 import moment from "moment-timezone";
 import Error from "next/error";
+import axios from "axios";
 
 export default function PostbyTag() {
   const router = useRouter();
@@ -181,7 +182,7 @@ export default function PostbyTag() {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { tag, page } = context.query;
   apiClient.prefetchQuery("getPostByTag", async () => {
-    const result = await frontApi.get(`/post/tag/${tag}/${page}`);
+    const result = await axios.get(`/post/tag/${tag}/${page}`);
     return result.data.postList;
   });
   return {

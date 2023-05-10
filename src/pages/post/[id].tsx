@@ -24,6 +24,7 @@ import {
   IPostByLikes,
   IPostByTags,
 } from "@/components/dto/PostDto";
+import axios from "axios";
 
 export default function PostView() {
   const [post, setPost] = useState<IPostByIdPage>({
@@ -179,7 +180,7 @@ export default function PostView() {
 export async function getServerSideProps(context: any) {
   const { id } = context.query;
   await apiClient.prefetchQuery("getPost", async () => {
-    const result = await frontApi.get(`/post/${id}`);
+    const result = await axios.get(`/post/${id}`);
     return result.data.post;
   });
 

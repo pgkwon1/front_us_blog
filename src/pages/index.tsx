@@ -2,6 +2,7 @@ import Posts from "@/components/post/posts";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { Box } from "@mui/material";
+import axios from "axios";
 import Link from "next/link";
 import { dehydrate } from "react-query";
 
@@ -32,7 +33,7 @@ export async function getServerSideProps(context: any) {
   const { page } = context.query;
 
   await apiClient.prefetchQuery("getPostList", async () => {
-    const result = await frontApi.get(`/page/${page}`);
+    const result = await axios.get(`/page/${page}`);
     return result.data.postList;
   });
 

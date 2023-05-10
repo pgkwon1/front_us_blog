@@ -20,6 +20,7 @@ import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { IRootState } from "@/components/dto/ReduxDto";
 import { Category, IPostByTags, IPostDto } from "@/components/dto/PostDto";
+import axios from "axios";
 
 export default function PostByCategory() {
   const [postList, setPostList] = useState([]);
@@ -198,7 +199,7 @@ export default function PostByCategory() {
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { category, page } = context.query;
   apiClient.prefetchInfiniteQuery("getPostByCategory", async () => {
-    const result = await frontApi.get(`/post/category/${category}/${page}`);
+    const result = await axios.get(`/post/category/${category}/${page}`);
     return result.data.postList;
   });
   return {
