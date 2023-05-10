@@ -36,7 +36,7 @@ export default function Posts() {
 
   const { data, isSuccess, hasNextPage, fetchNextPage, isStale } =
     useInfiniteQuery<IPostByIndexPage, Error, IPostByIndexPage>(
-      "postList",
+      "getPostList",
       ({ pageParam = 1 }) => getPostList(pageParam),
       {
         getNextPageParam: (lastPage: IPostByIndexPage, allPages) => {
