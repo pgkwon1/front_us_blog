@@ -1,6 +1,9 @@
 import Posts from "@/components/post/posts";
+import frontApi from "@/modules/apiInstance";
+import apiClient from "@/modules/reactQueryInstance";
 import { Box } from "@mui/material";
 import Link from "next/link";
+import { dehydrate } from "react-query";
 
 function Index({ apiConfig }: any) {
   return (
@@ -25,5 +28,18 @@ function Index({ apiConfig }: any) {
     </>
   );
 }
+export async function getServerSideProps(context: any) {
+  const { page } = context.query;
 
+  await apiClient.prefetchQuery("getPostList", async () => {
+    const result = await frontApi.get(`/page/${page}`);
+    return result.data.postList;
+  });
+
+  return {
+    props: {
+      dehydrateState: dehydrate(apiClient),
+    },
+  };
+}
 export default Index;

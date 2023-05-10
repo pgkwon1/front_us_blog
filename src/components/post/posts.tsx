@@ -161,18 +161,3 @@ export default function Posts() {
     </Box>
   );
 }
-
-export async function getServerSideProps(context: any) {
-  const { page } = context.query;
-
-  await apiClient.prefetchQuery(
-    "getPostList",
-    async () => await frontApi.get(`/page/${page}`)
-  );
-
-  return {
-    props: {
-      dehydrateState: dehydrate(apiClient),
-    },
-  };
-}
