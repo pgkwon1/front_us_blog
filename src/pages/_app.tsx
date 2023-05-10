@@ -10,15 +10,18 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { Hydrate, QueryClientProvider } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
+import frontApi from "@/modules/apiInstance";
 export default function App({ Component, pageProps }: AppProps) {
   if (
     typeof Cookies.get("X-CSRF-TOKEN") === "undefined" ||
     !sessionStorage.getItem("visited")
   ) {
-    axios.get("/api/getCsrf").then((result) => {
+    frontApi.get("/getCsrf").then((result) => {
       if (result.status === 200) {
         Cookies.set("X-CSRF-TOKEN", result.data.CSRF_TOKEN);
-        sessionStorage.setItem("visited", "1");
+        typeof window !== "undefined"
+          ? sessionStorage.setItem("visited", "1")
+          : null;
       }
     });
   }
@@ -45,7 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
           font-family: "S-CoreDream", "sans-serif" !important;
           margin: 0;
           padding: 0;
-          background: #f2f2f2;
+          background: white;
         }
         p {
           font-family: "S-CoreDream", "sans-serif" !important;
