@@ -197,10 +197,10 @@ export default function PostByCategory() {
 }
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { category, page } = context.query;
-  apiClient.prefetchInfiniteQuery(
-    "getPostByCategory",
-    async () => await frontApi.get(`/post/category/${category}/${page}`)
-  );
+  apiClient.prefetchInfiniteQuery("getPostByCategory", async () => {
+    const result = await frontApi.get(`/post/category/${category}/${page}`);
+    return result.data.postList;
+  });
   return {
     props: {
       dehydrateState: dehydrate(apiClient),

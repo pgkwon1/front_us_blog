@@ -180,10 +180,10 @@ export default function PostbyTag() {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { tag, page } = context.query;
-  apiClient.prefetchQuery(
-    "getPostByTag",
-    async () => (await frontApi.get(`/post/tag/${tag}/${page}`)).data.post
-  );
+  apiClient.prefetchQuery("getPostByTag", async () => {
+    const result = await frontApi.get(`/post/tag/${tag}/${page}`);
+    return result.data.postList;
+  });
   return {
     props: {
       dehydrateState: dehydrate(apiClient),
