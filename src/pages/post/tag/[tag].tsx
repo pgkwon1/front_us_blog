@@ -72,16 +72,21 @@ export default function PostbyTag() {
 
   useEffect(() => {
     if (isStale === false) {
-      // 캐시 데이터가 남아있으면서 태그가 달라졌을 경우 다시 데이터를 가져옴
       if (currentTag !== tag) {
+        // 캐시 데이터가 남아있으면서 태그가 달라졌을 경우 다시 데이터를 가져옴
+
         refetch();
+      } else {
+        // 캐시 데이터가 남아있으면서 태그가 그대로일경우 캐시데이터로 렌더링
+
+        data?.pages.map((post) => {
+          setPostList((prevList: any) => prevList.concat(post.postList));
+          setLoading(false);
+        });
       }
-      data?.pages.map((post) => {
-        setPostList((prevList: any) => prevList.concat(post.postList));
-        setLoading(false);
-      });
     }
-  }, [isStale, currentTag, data?.pages, refetch, tag]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tag]);
 
   useEffect(() => {
     if (lastPostRef.current instanceof HTMLElement) {

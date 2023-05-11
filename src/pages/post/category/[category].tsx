@@ -33,7 +33,7 @@ export default function PostByCategory() {
   const { currentCategory } = useSelector(
     (state: IRootState) => state.postReducer
   );
-  async function getPostByTag(page: number) {
+  async function getPostByCategory(page: number) {
     const result = await frontApi.get(`/post/category/${category}/${page}`);
     setPostList((prevList) => prevList.concat(result.data.postList));
     setLength(result.data.postList.length);
@@ -51,7 +51,7 @@ export default function PostByCategory() {
   const { data, fetchNextPage, refetch, hasNextPage, isStale } =
     useInfiniteQuery(
       "getPostByCategory",
-      ({ pageParam = 1 }) => getPostByTag(pageParam),
+      ({ pageParam = 1 }) => getPostByCategory(pageParam),
       {
         getNextPageParam: (lastPage, allPages) => {
           const nextPage = allPages.length + 1;
@@ -59,31 +59,28 @@ export default function PostByCategory() {
         },
         staleTime: 120000,
         cacheTime: 120000,
+        refetchOnMount: false,
       }
     );
 
-  // 캐시 데이터가 남아있지만 카테고리가 변경 되었을때 refetch 처리.
   useEffect(() => {
     if (isStale === false) {
       if (category !== currentCategory) {
-        setPostList([]);
+        // 캐시 데이터가 남아있지만 카테고리가 변경 되었을때 refetch 처리
+        setPostList((current) => []);
         refetch();
+      } else {
+        let listLength = 0;
+        data?.pages.map((page) => {
+          setPostList((prevList) => prevList.concat(page.postList));
+          listLength += page.postList.length;
+        });
+        setLoading(false);
+        setLength(listLength);
       }
     }
-  }, [category, currentCategory, isStale, refetch]);
-
-  // 카테고리가 같으며 캐시된 데이터가 남아있을때 렌더링 처리 작업.
-  useEffect(() => {
-    if (category === currentCategory && data) {
-      let listLength = 0;
-      data.pages.map((page) => {
-        setPostList((prevList) => prevList.concat(page.postList));
-        listLength += page.postList.length;
-      });
-      setLoading(false);
-      setLength(listLength);
-    }
-  }, [category, currentCategory, data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
 
   // ref가 포커싱 될 때 다음 페이지 데이터 fetching.
   const handleObserver = useCallback(
