@@ -17,13 +17,13 @@ import Link from "next/link";
 import moment from "moment-timezone";
 import Like from "@/components/post/like";
 import { useSelector } from "react-redux";
-import { IRootState } from "@/components/dto/ReduxDto";
+import { IRootState } from "@/dto/ReduxDto";
 import {
   Category,
   IPostByIdPage,
   IPostByLikes,
   IPostByTags,
-} from "@/components/dto/PostDto";
+} from "@/dto/PostDto";
 import axios from "axios";
 
 export default function PostView() {

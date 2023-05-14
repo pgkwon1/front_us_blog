@@ -10,7 +10,7 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { IRootState } from "../dto/ReduxDto";
+import { IRootState } from "@/dto/ReduxDto";
 
 export default function Header() {
   const { login_state } = useSelector((state: IRootState) => state.userReducer);

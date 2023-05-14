@@ -27,7 +27,7 @@ export interface IPostList {
   author: string;
   Tags: IPostByTags[];
   postsLikes: IPostByLikes[];
-  category: string;
+  category: Category;
   title: string;
   contents: string;
   like: number;

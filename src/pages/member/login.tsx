@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
-import { IRootState } from "@/components/dto/ReduxDto";
-import { ILoginDto, ILoginErrorDto } from "@/components/dto/users/LoginDto";
+import { IRootState } from "@/dto/ReduxDto";
+import { ILoginDto, ILoginErrorDto } from "@/dto/users/LoginDto";
 import { isError } from "react-query";
 
 export default function Login() {

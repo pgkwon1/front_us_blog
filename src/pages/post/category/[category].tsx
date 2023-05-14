@@ -15,8 +15,8 @@ import { ThreeDots } from "react-loader-spinner";
 import styled from "@/styles/posts/Posts.module.css";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
-import { IRootState } from "@/components/dto/ReduxDto";
-import { Category, IPostList } from "@/components/dto/PostDto";
+import { IRootState } from "@/dto/ReduxDto";
+import { Category, IPostList } from "@/dto/PostDto";
 import axios from "axios";
 import Post from "@/components/post/post";
 

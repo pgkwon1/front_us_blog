@@ -15,14 +15,10 @@ import { WithContext as ReactTags } from "react-tag-input";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import {
-  IAddTagDto,
-  IPostByTags,
-  IPostWriteForm,
-} from "@/components/dto/PostDto";
+import { IAddTagDto, IPostByTags, IPostWriteForm } from "@/dto/PostDto";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
-import { IRootState } from "@/components/dto/ReduxDto";
+import { IRootState } from "@/dto/ReduxDto";
 import ReactQuill from "react-quill";
 
 const TextEditor = dynamic(

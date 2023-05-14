@@ -5,7 +5,7 @@ import Error from "next/error";
 import { Box, Skeleton } from "@mui/material";
 import styled from "@/styles/posts/Posts.module.css";
 
-import { IPostByIndexPage, IPostList } from "../dto/PostDto";
+import { IPostByIndexPage, IPostList } from "@/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import Post from "./post";
 

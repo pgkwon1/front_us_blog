@@ -6,7 +6,7 @@ import { ChangeEvent, ChangeEventHandler, useContext, useState } from "react";
 import frontApi from "@/modules/apiInstance";
 import { useMutation } from "react-query";
 import { useForm } from "react-hook-form";
-import { IErrorDto } from "@/components/dto/ErrorDto";
+import { IErrorDto } from "@/dto/ErrorDto";
 
 interface IRegisterForm {
   userId: string;

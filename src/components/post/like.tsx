@@ -9,7 +9,7 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useSelector } from "react-redux";
 import { useEffect, useRef, useState } from "react";
 import styled from "@/styles/posts/Posts.module.css";
-import { IRootState } from "../dto/ReduxDto";
+import { IRootState } from "@/dto/ReduxDto";
 interface ILikeProps {
   likes: number;
   unlikes: number;

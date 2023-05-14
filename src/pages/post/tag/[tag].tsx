@@ -12,11 +12,11 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 import PersonIcon from "@mui/icons-material/Person";
 import styled from "@/styles/posts/Posts.module.css";
 
-import { Category, IPostByTagPage, IPostList } from "@/components/dto/PostDto";
+import { Category, IPostByTagPage, IPostList } from "@/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { setCurrentTag } from "@/store/reducers/post";
-import { IRootState } from "@/components/dto/ReduxDto";
+import { IRootState } from "@/dto/ReduxDto";
 
 import Error from "next/error";
 import axios from "axios";

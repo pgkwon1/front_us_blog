@@ -5,7 +5,7 @@ import CodeIcon from "@mui/icons-material/Code";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import PersonIcon from "@mui/icons-material/Person";
 
-import { Category, IPostByTags, IPostList } from "../dto/PostDto";
+import { Category, IPostByTags, IPostList } from "@/dto/PostDto";
 import Link from "next/link";
 import moment from "moment-timezone";
 import { ReactElement, useCallback } from "react";
