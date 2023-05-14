@@ -1,25 +1,13 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
-import { dehydrate, useInfiniteQuery } from "react-query";
-import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useInfiniteQuery } from "react-query";
 import Error from "next/error";
 
-import { Box, Chip, ListItem, Skeleton, SvgIconProps } from "@mui/material";
-import BusinessIcon from "@mui/icons-material/Business";
-import CodeIcon from "@mui/icons-material/Code";
-import CoffeeIcon from "@mui/icons-material/Coffee";
-import PersonIcon from "@mui/icons-material/Person";
-import styled from "../../styles/posts/Posts.module.css";
+import { Box, Skeleton } from "@mui/material";
+import styled from "@/styles/posts/Posts.module.css";
 
-import moment from "moment-timezone";
-
-import {
-  Category,
-  IPostByIndexPage,
-  IPostByTags,
-  IPostDto,
-} from "../dto/PostDto";
+import { IPostByIndexPage, IPostDto } from "../dto/PostDto";
 import frontApi from "@/modules/apiInstance";
-import apiClient from "@/modules/reactQueryInstance";
+import Post from "./post";
 
 export default function Posts() {
   const [postList, setPostList] = useState([]);
@@ -57,7 +45,7 @@ export default function Posts() {
       });
       setLoading(false);
     }
-  }, [isStale, data?.pages]);
+  }, []);
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
@@ -86,22 +74,6 @@ export default function Posts() {
     }
   }, [loading, fetchNextPage, hasNextPage, handleObserver]);
 
-  const getCategoryIcon = (category: Category): ReactElement<SvgIconProps> => {
-    switch (category) {
-      case "직장": {
-        return <BusinessIcon />;
-      }
-      case "잡담": {
-        return <CoffeeIcon />;
-      }
-      case "기술": {
-        return <CodeIcon />;
-      }
-      default: {
-        return <PersonIcon />;
-      }
-    }
-  };
   return (
     <Box>
       {loading ? (
@@ -109,51 +81,7 @@ export default function Posts() {
       ) : (
         <Box className={styled.postWrap}>
           {postList.map((post: IPostDto, index: number) => {
-            return (
-              <Box key={index} className={styled.post}>
-                <Link href={`/post/${post.id}`}>
-                  <Box className={styled.postInfo}>
-                    <Box className={styled.postCategory}>
-                      <Chip
-                        icon={getCategoryIcon(post.category)}
-                        label={String(post.category)}
-                      ></Chip>
-                    </Box>
-                    <Box className={styled.postTitle}>{post.title}</Box>
-                  </Box>
-
-                  <Box className={styled.postContents}>
-                    <Box>{post.contents.substr(0, 100)}</Box>
-                  </Box>
-
-                  <Box className={styled.postDescription}>
-                    <Box className={styled.postTag} component="ul">
-                      {post.Tags?.map((tag: IPostByTags, index: number) => {
-                        return (
-                          <Link key={index} href={`/post/tag/${tag.tagName}`}>
-                            <ListItem className={styled.tagWrap}>
-                              <Chip
-                                className={styled.tag}
-                                variant="outlined"
-                                label={"# " + tag.tagName}
-                              ></Chip>
-                            </ListItem>
-                          </Link>
-                        );
-                      })}
-                    </Box>
-                    <Box
-                      className={`${styled.postDescription} ${styled.postBottomDescription}`}
-                    >
-                      <Box className={styled.like}>좋아요 {post.like}개 </Box>
-                      <Box className={styled.createdAt}>
-                        {moment(post.createdAt).utc().fromNow()}
-                      </Box>
-                    </Box>
-                  </Box>
-                </Link>
-              </Box>
-            );
+            return <Post post={post} key={index} />;
           })}
           <Box ref={lastPostRef}></Box>
         </Box>

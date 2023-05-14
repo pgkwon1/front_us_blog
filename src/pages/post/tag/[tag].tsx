@@ -1,27 +1,26 @@
 import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { GetServerSidePropsContext } from "next";
 import { dehydrate, useInfiniteQuery } from "react-query";
 import { useRouter } from "next/router";
 import { ThreeDots } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Box, Chip, ListItem, SvgIconProps } from "@mui/material";
+import { Box, SvgIconProps } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import CodeIcon from "@mui/icons-material/Code";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import PersonIcon from "@mui/icons-material/Person";
 import styled from "@/styles/posts/Posts.module.css";
 
-import { Category, IPostByTagPage, IPostDto } from "@/components/dto/PostDto";
+import { Category, IPostByTagPage, IPostList } from "@/components/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { setCurrentTag } from "@/store/reducers/post";
 import { IRootState } from "@/components/dto/ReduxDto";
 
-import moment from "moment-timezone";
 import Error from "next/error";
 import axios from "axios";
+import Post from "@/components/post/post";
 
 export default function PostbyTag() {
   const router = useRouter();
@@ -128,54 +127,8 @@ export default function PostbyTag() {
         />
       ) : (
         <Box className={styled.postWrap}>
-          {postList.map((post: IPostDto, index: number) => {
-            return (
-              <Box key={index} className={styled.post}>
-                <Link href={`/post/${post.id}`}>
-                  <Box className={styled.postInfo}>
-                    <Box className={styled.postCategory}>
-                      <Chip
-                        icon={getCategoryIcon(post.category)}
-                        label={String(post.category)}
-                      ></Chip>
-                    </Box>
-                    <Box className={styled.postTitle}>{post.title}</Box>
-                  </Box>
-
-                  <Box className={styled.postContents}>
-                    <Box>{post.contents.substr(0, 100)}</Box>
-                  </Box>
-
-                  <Box className={styled.postDescription}>
-                    <Box className={styled.postTag} component="ul">
-                      {post.Tags?.map(
-                        (tag: { tagName: string }, index: number) => {
-                          return (
-                            <Link href={`/post/tag/${tag.tagName}`} key={index}>
-                              <ListItem className={styled.tagWrap}>
-                                <Chip
-                                  className={styled.tag}
-                                  variant="outlined"
-                                  label={"# " + tag.tagName}
-                                ></Chip>
-                              </ListItem>
-                            </Link>
-                          );
-                        }
-                      )}
-                    </Box>
-                    <Box
-                      className={`${styled.postDescription} ${styled.postBottomDescription}`}
-                    >
-                      <Box className={styled.like}>좋아요 {post.like}개 </Box>
-                      <Box className={styled.createdAt}>
-                        {moment(post.createdAt).utc().fromNow()}
-                      </Box>
-                    </Box>
-                  </Box>
-                </Link>
-              </Box>
-            );
+          {postList.map((post: IPostList, index: number) => {
+            return <Post post={post} key={index} />;
           })}
           {length > 9 ? <Box ref={lastPostRef}>Loading..</Box> : ""}
         </Box>
