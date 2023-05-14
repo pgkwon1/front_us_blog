@@ -5,7 +5,7 @@ import Error from "next/error";
 import { Box, Skeleton } from "@mui/material";
 import styled from "@/styles/posts/Posts.module.css";
 
-import { IPostByIndexPage, IPostDto } from "../dto/PostDto";
+import { IPostByIndexPage, IPostList } from "../dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import Post from "./post";
 
@@ -80,7 +80,7 @@ export default function Posts() {
         <Skeleton variant="rectangular" width={210} height={118} />
       ) : (
         <Box className={styled.postWrap}>
-          {postList.map((post: IPostDto, index: number) => {
+          {postList.map((post: IPostList, index: number) => {
             return <Post post={post} key={index} />;
           })}
           <Box ref={lastPostRef}></Box>

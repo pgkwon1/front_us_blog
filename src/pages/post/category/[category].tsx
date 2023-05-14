@@ -16,7 +16,7 @@ import styled from "@/styles/posts/Posts.module.css";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { IRootState } from "@/components/dto/ReduxDto";
-import { Category, IPostDto } from "@/components/dto/PostDto";
+import { Category, IPostList } from "@/components/dto/PostDto";
 import axios from "axios";
 import Post from "@/components/post/post";
 
@@ -138,7 +138,7 @@ export default function PostByCategory() {
         />
       ) : (
         <Box className={styled.postWrap}>
-          {postList.map((post: IPostDto, index: number) => {
+          {postList.map((post: IPostList, index: number) => {
             return <Post post={post} key={index} />;
           })}
           {length > 9 ? <Box ref={lastPostRef}>Loading..</Box> : ""}
