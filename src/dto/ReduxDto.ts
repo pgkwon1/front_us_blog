@@ -9,6 +9,7 @@ interface IUserReducer {
 }
 
 interface IPostReducer {
+  currentPostId: string;
   currentTag: string;
   currentCategory: string;
 }

@@ -16,7 +16,7 @@ import frontApi from "@/modules/apiInstance";
 import Link from "next/link";
 import moment from "moment-timezone";
 import Like from "@/components/post/like";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "@/dto/ReduxDto";
 import {
   Category,
@@ -25,6 +25,8 @@ import {
   IPostByTags,
 } from "@/dto/PostDto";
 import axios from "axios";
+import Comment from "@/components/post/comment/comment";
+import { setCurrentPostId } from "@/store/reducers/post";
 
 export default function PostView() {
   const [post, setPost] = useState<IPostByIdPage>({
@@ -45,6 +47,7 @@ export default function PostView() {
   });
 
   const router = useRouter();
+  const dispatch = useDispatch();
   const { id } = router.query;
   const { userId } = useSelector((state: IRootState) => state.userReducer);
   hljs.configure({
@@ -84,6 +87,7 @@ export default function PostView() {
   }, []);
   useEffect(() => {
     data && setPost(data);
+    dispatch(setCurrentPostId(id));
   }, [isLoading, data]);
 
   useEffect(() => {
@@ -108,67 +112,74 @@ export default function PostView() {
   return (
     <Box className={styled.postWrap}>
       {post ? (
-        <Box className={styled.post}>
-          <Box className={styled.postInfo}>
-            <Box className={styled.postCategory}>
-              <Chip
-                icon={getCategoryIcon(post.category)}
-                label={post.category}
-              ></Chip>
-            </Box>
-            <Box
-              sx={{
-                fontSize: "13px",
-                display: "flex",
-                flexDirection: "row",
-                gap: "0.8rem",
-              }}
-            >
-              <Avatar color="primary" variant="soft">
-                {post.author && post.author.slice(0, 2).toUpperCase()}
-              </Avatar>
+        <Box>
+          <Box className={styled.post}>
+            <Box className={styled.postInfo}>
+              <Box className={styled.postCategory}>
+                <Chip
+                  icon={getCategoryIcon(post.category)}
+                  label={post.category}
+                ></Chip>
+              </Box>
               <Box
-                sx={{ display: "flex", gap: "0.3rem", flexDirection: "column" }}
+                sx={{
+                  fontSize: "13px",
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "0.8rem",
+                }}
               >
-                <Box>{post.author}</Box>
-                <Box>{moment(post.createdAt).utc().fromNow()}</Box>
+                <Avatar color="primary" variant="soft">
+                  {post.author && post.author.slice(0, 2).toUpperCase()}
+                </Avatar>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "0.3rem",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Box>{post.author}</Box>
+                  <Box>{moment(post.createdAt).utc().fromNow()}</Box>
+                </Box>
+              </Box>
+              <Box className={styled.postTitle}>{post.title}</Box>
+            </Box>
+
+            <Box className={styled.postContents}>
+              <Typography
+                dangerouslySetInnerHTML={{ __html: post.contents }}
+              ></Typography>
+            </Box>
+
+            <Box className={styled.postDescription}>
+              <Box className={styled.postTag} component="ul">
+                {post.Tags?.map((tag: IPostByTags, index: number) => {
+                  return (
+                    <Link href={`/post/tag/${tag.tagName}`} key={index}>
+                      <ListItem className={styled.tagWrap}>
+                        <Chip
+                          className={styled.tag}
+                          variant="outlined"
+                          label={`# ${tag.tagName}`}
+                        ></Chip>
+                      </ListItem>
+                    </Link>
+                  );
+                })}
               </Box>
             </Box>
-            <Box className={styled.postTitle}>{post.title}</Box>
-          </Box>
-
-          <Box className={styled.postContents}>
-            <Typography
-              dangerouslySetInnerHTML={{ __html: post.contents }}
-            ></Typography>
-          </Box>
-
-          <Box className={styled.postDescription}>
-            <Box className={styled.postTag} component="ul">
-              {post.Tags?.map((tag: IPostByTags, index: number) => {
-                return (
-                  <Link href={`/post/tag/${tag.tagName}`} key={index}>
-                    <ListItem className={styled.tagWrap}>
-                      <Chip
-                        className={styled.tag}
-                        variant="outlined"
-                        label={`# ${tag.tagName}`}
-                      ></Chip>
-                    </ListItem>
-                  </Link>
-                );
-              })}
+            <Like likes={post.like} unlikes={post.unlike} likeProp={likeInfo} />
+            <Box
+              className={`${styled.postDescription} ${styled.postBottomDescription}`}
+            >
+              <Box className={styled.like}>좋아요 {post.like}개 </Box>
+              <Box className={styled.createdAt}>
+                {moment(post.createdAt).utc().fromNow()}
+              </Box>
             </Box>
           </Box>
-          <Like likes={post.like} unlikes={post.unlike} likeProp={likeInfo} />
-          <Box
-            className={`${styled.postDescription} ${styled.postBottomDescription}`}
-          >
-            <Box className={styled.like}>좋아요 {post.like}개 </Box>
-            <Box className={styled.createdAt}>
-              {moment(post.createdAt).utc().fromNow()}
-            </Box>
-          </Box>
+          <Comment />
         </Box>
       ) : (
         "Post Not Found!"
