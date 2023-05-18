@@ -2,8 +2,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const postReducer = createSlice({
   name: "postReducer",
-  initialState: { currentTag: "", currentCategory: "" },
+  initialState: { currentPostId: "", currentTag: "", currentCategory: "" },
   reducers: {
+    setCurrentPostId: (state, action) => {
+      state.currentPostId = action.payload;
+    },
     setCurrentTag: (state, action) => {
       state.currentTag = action.payload;
     },
@@ -13,5 +16,6 @@ const postReducer = createSlice({
   },
 });
 
-export const { setCurrentTag, setCurrentCategory } = postReducer.actions;
+export const { setCurrentPostId, setCurrentTag, setCurrentCategory } =
+  postReducer.actions;
 export default postReducer.reducer;
