@@ -1,0 +1,32 @@
+.commentsWrap {
+  margin-top: 1rem;
+  padding: 2.5rem;
+  background: #fff;
+  border: 1px solid grey;
+  border-radius: 10px;
+}
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-bottom: 1px solid #dddddd;
+  padding: 0.8rem 0 0.8rem 0;
+}
+.commentsInfo {
+  display: flex;
+  gap: 0.3rem;
+  flex-direction: column;
+}
+
+.commentsContents {
+  background-color: rgb(238 238 238);
+  margin-left: 3.1rem;
+  padding: 0.8rem;
+}
