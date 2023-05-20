@@ -6,6 +6,7 @@ import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { useRouter } from "next/router";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import frontApi from "@/modules/apiInstance";
+
 type Props = {
   children?: ReactNode;
 };
@@ -17,6 +18,10 @@ export default async function useAxiosInterceptors() {
     (config) => {
       if (!config.headers) return config;
       const token = localStorage.getItem("token");
+      const csrfToken = Cookies.get("X-CSRF-TOKEN");
+      if ("X-CSRF-TOKEN" in config.headers === false) {
+        config.headers._csrf = csrfToken;
+      }
       if (config.headers && token) {
         config.headers.authorization = `Bearer ${token}`;
         return config;
