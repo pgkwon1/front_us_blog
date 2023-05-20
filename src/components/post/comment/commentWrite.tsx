@@ -2,41 +2,57 @@ import { IRootState } from "@/dto/ReduxDto";
 import frontApi from "@/modules/apiInstance";
 import { Textarea } from "@mui/joy";
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 
-export default function CommentWrite() {
-  const inputRef = useRef<HTMLInputElement>(null);
-
+interface ICommentWriteProps {
+  updateCommentList: () => void;
+}
+export default function CommentWrite({
+  updateCommentList,
+}: ICommentWriteProps) {
   const { currentPostId } = useSelector(
     (state: IRootState) => state.postReducer
   );
   const { userId } = useSelector((state: IRootState) => state.userReducer);
 
-  async function handleComments(): Promise<void> {
-    const comments = inputRef.current?.value;
-    if (!comments) {
-    }
+  const [contents, setContents] = useState("");
 
+  async function handleComments(): Promise<void> {
     const result = await commentWriteMutation.mutate();
   }
   async function writeComments(): Promise<void> {
-    const comments = inputRef.current?.value;
     await frontApi.post(`/comment/write`, {
+      userId,
       postId: currentPostId,
-      comments: "test",
+      contents,
     });
   }
   const commentWriteMutation = useMutation(
     ["writeComment", currentPostId],
-    writeComments
+    writeComments,
+    {
+      onSuccess: () => {
+        updateCommentList();
+        setContents("");
+      },
+    }
   );
+
   return (
     <Box>
       <Typography>댓글</Typography>
-      <Textarea ref={inputRef} minRows={3} />
-      <Button onClick={handleComments} variant="contained">
+      <Textarea
+        onChange={(e) => setContents(e.target.value)}
+        minRows={3}
+        value={contents}
+      />
+      <Button
+        sx={{ marginTop: "1rem" }}
+        onClick={handleComments}
+        variant="contained"
+      >
         작성
       </Button>
     </Box>
