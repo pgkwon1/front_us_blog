@@ -1,9 +1,7 @@
 import frontApi from "@/modules/apiInstance";
-import apiClient from "@/modules/reactQueryInstance";
 import { Box, Button } from "@mui/material";
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { dehydrate, useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useSelector } from "react-redux";

@@ -10,7 +10,6 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
 import { dehydrate, useQuery } from "react-query";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
 import Link from "next/link";
@@ -18,12 +17,7 @@ import moment from "moment-timezone";
 import Like from "@/components/post/like";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "@/dto/ReduxDto";
-import {
-  Category,
-  IPostByIdPage,
-  IPostByLikes,
-  IPostByTags,
-} from "@/dto/PostDto";
+import { IPostByIdPage, IPostByLikes, IPostByTags } from "@/dto/PostDto";
 import axios from "axios";
 import Comment from "@/components/post/comment/comment";
 import { setCurrentPostId } from "@/store/reducers/post";

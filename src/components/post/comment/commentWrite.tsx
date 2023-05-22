@@ -1,8 +1,8 @@
 import { IRootState } from "@/dto/ReduxDto";
 import frontApi from "@/modules/apiInstance";
 import { Textarea } from "@mui/joy";
-import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { useState } from "react";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 

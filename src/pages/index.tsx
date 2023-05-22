@@ -1,12 +1,11 @@
 import Posts from "@/components/post/posts";
-import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { Box } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 import { dehydrate } from "react-query";
 
-function Index({ apiConfig }: any) {
+function Index() {
   return (
     <>
       <Link href={"/post/write"}>

@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { RefObject, forwardRef, useEffect, useMemo, useState } from "react";
+import { forwardRef, useState, useMemo } from "react";
 import hljs from "highlight.js";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -13,7 +13,6 @@ const Editor = forwardRef(function Editor({
   handleContents,
 }: IEditorProps) {
   const [value, setValue] = useState("");
-  const dispatch = useDispatch();
   hljs.configure({
     languages: ["javascript", "ruby", "python", "rust"],
   });
@@ -62,7 +61,6 @@ const Editor = forwardRef(function Editor({
     "background",
   ];
 
-  let timeout = null;
   return (
     <Box>
       <ReactQuill

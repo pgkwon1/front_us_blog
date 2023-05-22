@@ -1,4 +1,3 @@
-import { AppProps } from "next/app";
 import Header from "./Header";
 import Footer from "./Footer";
 import { ReactNode } from "react";

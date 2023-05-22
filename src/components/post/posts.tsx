@@ -13,7 +13,6 @@ export default function Posts() {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
   const lastPostRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {}, []);
   const getPostList = async (page: number): Promise<IPostByIndexPage> => {
     page = page ?? 1;
     const result = await frontApi.get(`/page/${page}`);
