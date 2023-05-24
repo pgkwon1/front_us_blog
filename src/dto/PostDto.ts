@@ -2,22 +2,8 @@ const category = ["기술", "직장", "잡담"] as const;
 const likeType = ["LIKE", "UNLIKE"] as const;
 export type Category = (typeof category)[keyof typeof category];
 export type LikeType = (typeof likeType)[keyof typeof likeType];
-export type IPostByIdPage = IPostList;
-export type IPostByTagPage = IPostByIndexPage;
 
-export interface IPostDto {
-  id: string;
-  title: string;
-  num: number;
-  contents: string;
-  category: Category;
-  Tags: IPostByTags[];
-  createdAt: Date;
-  like: number;
-  unlike: number;
-}
-
-export interface IPostByIndexPage {
+export interface IPostListResponse {
   count: number;
   postList: IPostList[];
 }
@@ -27,7 +13,7 @@ export interface IPostList {
   author: string;
   Tags: IPostByTags[];
   postsLikes: IPostByLikes[];
-  category: Category;
+  category: Category | string;
   title: string;
   contents: string;
   like: number;

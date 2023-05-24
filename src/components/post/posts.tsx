@@ -5,7 +5,7 @@ import Error from "next/error";
 import { Box, Skeleton } from "@mui/material";
 import styled from "@/styles/posts/Posts.module.css";
 
-import { IPostByIndexPage, IPostList } from "@/dto/PostDto";
+import { IPostListResponse, IPostList } from "@/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import Post from "./post";
 
@@ -13,7 +13,7 @@ export default function Posts() {
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(true);
   const lastPostRef = useRef<HTMLDivElement>(null);
-  const getPostList = async (page: number): Promise<IPostByIndexPage> => {
+  const getPostList = async (page: number): Promise<IPostListResponse> => {
     page = page ?? 1;
     const result = await frontApi.get(`/page/${page}`);
     setPostList((prevList) => prevList.concat(result.data.postList));
@@ -22,11 +22,11 @@ export default function Posts() {
   };
 
   const { data, isSuccess, hasNextPage, fetchNextPage, isStale } =
-    useInfiniteQuery<IPostByIndexPage, Error, IPostByIndexPage>(
+    useInfiniteQuery<IPostListResponse, Error, IPostListResponse>(
       "getPostList",
       ({ pageParam = 1 }) => getPostList(pageParam),
       {
-        getNextPageParam: (lastPage: IPostByIndexPage, allPages) => {
+        getNextPageParam: (lastPage: IPostListResponse, allPages) => {
           const nextPage: any = allPages.length + 1;
 
           return lastPage.postList.length !== 0 ? nextPage : undefined;

@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Box } from "@mui/material";
 import styled from "@/styles/posts/Posts.module.css";
 
-import { IPostByTagPage, IPostList } from "@/dto/PostDto";
+import { IPostList, IPostListResponse } from "@/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { setCurrentTag } from "@/store/reducers/post";
@@ -56,15 +56,15 @@ export default function PostbyTag() {
     dispatch(setCurrentTag(tag));
   }
   const { data, hasNextPage, fetchNextPage, isStale } = useInfiniteQuery<
-    IPostByTagPage,
+    IPostListResponse,
     Error,
-    IPostByTagPage
+    IPostListResponse
   >(
     queryKey,
     ({ pageParam = 1 }) => getPostByTag(pageParam),
 
     {
-      getNextPageParam(lastPage: IPostByTagPage, allPages) {
+      getNextPageParam(lastPage: IPostListResponse, allPages) {
         const nextPage = allPages.length + 1;
         if ("postList" in lastPage && lastPage.postList.length !== 0)
           return nextPage;

@@ -17,13 +17,13 @@ import moment from "moment-timezone";
 import Like from "@/components/post/like";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "@/dto/ReduxDto";
-import { IPostByIdPage, IPostByLikes, IPostByTags } from "@/dto/PostDto";
+import { IPostList, IPostByLikes, IPostByTags } from "@/dto/PostDto";
 import axios from "axios";
 import Comment from "@/components/post/comment/comment";
 import { setCurrentPostId } from "@/store/reducers/post";
 
 export default function PostView() {
-  const [post, setPost] = useState<IPostByIdPage>({
+  const [post, setPost] = useState<IPostList>({
     id: "",
     author: "",
     Tags: [],
@@ -49,19 +49,15 @@ export default function PostView() {
     languages: ["javascript", "ruby", "python", "rust"],
   });
 
-  const getPost = async (): Promise<IPostByIdPage> => {
+  const getPost = async (): Promise<IPostList> => {
     const result = await frontApi.get(`/post/${id}`);
     return result.data.post;
   };
 
-  const { isLoading, data, refetch } = useQuery<IPostByIdPage>(
-    queryKey,
-    getPost,
-    {
-      staleTime: 10 * 1000,
-      cacheTime: 10 * 1000,
-    }
-  );
+  const { isLoading, data, refetch } = useQuery<IPostList>(queryKey, getPost, {
+    staleTime: 10 * 1000,
+    cacheTime: 10 * 1000,
+  });
 
   const getCategoryIcon = useMemo(() => {
     // eslint-disable-next-line react/display-name
