@@ -42,8 +42,9 @@ export default function PostView() {
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const { id } = router.query;
+  const id = router.query.id as string;
   const { userId } = useSelector((state: IRootState) => state.userReducer);
+  const queryKey = useMemo(() => ["getPost", id], [id]);
   hljs.configure({
     languages: ["javascript", "ruby", "python", "rust"],
   });
@@ -53,18 +54,14 @@ export default function PostView() {
     return result.data.post;
   };
 
-  const { isLoading, data, isStale, refetch } = useQuery<IPostByIdPage>(
-    "getPost",
+  const { isLoading, data, refetch } = useQuery<IPostByIdPage>(
+    queryKey,
     getPost,
     {
       staleTime: 10 * 1000,
       cacheTime: 10 * 1000,
     }
   );
-
-  if (isStale === false && data?.id !== id) {
-    refetch();
-  }
 
   const getCategoryIcon = useMemo(() => {
     // eslint-disable-next-line react/display-name
@@ -82,6 +79,7 @@ export default function PostView() {
   useEffect(() => {
     data && setPost(data);
     dispatch(setCurrentPostId(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, data]);
 
   useEffect(() => {
@@ -111,8 +109,8 @@ export default function PostView() {
             <Box className={styled.postInfo}>
               <Box className={styled.postCategory}>
                 <Chip
-                  icon={getCategoryIcon(post.category)}
-                  label={post.category}
+                  icon={getCategoryIcon(String(post.category))}
+                  label={String(post.category)}
                 ></Chip>
               </Box>
               <Box
@@ -184,7 +182,7 @@ export default function PostView() {
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query;
-  await apiClient.prefetchQuery("getPost", async () => {
+  await apiClient.prefetchQuery(["getPost", id], async () => {
     const result = await axios.get(`/post/${id}`);
     return result.data.post;
   });

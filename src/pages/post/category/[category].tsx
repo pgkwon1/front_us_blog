@@ -1,44 +1,75 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { dehydrate, useInfiniteQuery } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategory } from "@/store/reducers/post";
 
-import { Box, SvgIconProps } from "@mui/material";
-import BusinessIcon from "@mui/icons-material/Business";
-import CodeIcon from "@mui/icons-material/Code";
-import CoffeeIcon from "@mui/icons-material/Coffee";
-import PersonIcon from "@mui/icons-material/Person";
+import { Box } from "@mui/material";
 import { ThreeDots } from "react-loader-spinner";
 
 import styled from "@/styles/posts/Posts.module.css";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import { IRootState } from "@/dto/ReduxDto";
-import { Category, IPostList } from "@/dto/PostDto";
+import { IPostList } from "@/dto/PostDto";
 import axios from "axios";
 import Post from "@/components/post/post";
 
+interface IPostByCategory {
+  [key: string]: any;
+}
 export default function PostByCategory() {
-  const [postList, setPostList] = useState([]);
+  const [postList, setPostList] = useState<IPostByCategory>({
+    잡담: [],
+    기술: [],
+    직장: [],
+  });
   const [loading, setLoading] = useState(true);
   const [length, setLength] = useState(0);
   const router = useRouter();
-  const { category } = router.query;
+  const category = router.query.category as string;
+  const queryKey = useMemo(() => ["getPostByCategory", category], [category]);
+
   const lastPostRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const { currentCategory } = useSelector(
     (state: IRootState) => state.postReducer
   );
+
   async function getPostByCategory(page: number) {
     const result = await frontApi.get(`/post/category/${category}/${page}`);
-    setPostList((prevList) => prevList.concat(result.data.postList));
-    setLength(result.data.postList.length);
-    setLoading(false);
-    dispatch(setCurrentCategory(category));
+    rendering(result.data.postList, category, false);
     return result.data;
   }
+
+  const rendering = useCallback(
+    (addList: IPostList[], category: string, isCache: boolean) => {
+      // 캐시데이터로 렌더링
+      if (isCache === true) {
+        setPostList((prevList) => {
+          return {
+            ...prevList,
+            [category]: addList,
+          };
+        });
+        //  response data로 렌더링
+      } else {
+        setPostList((prevList) => {
+          return {
+            ...prevList,
+            [category]: prevList[category].concat(addList),
+          };
+        });
+      }
+      setLength(addList.length);
+      setLoading(false);
+      dispatch(setCurrentCategory(category));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
   /**
    * @data: 캐시데이터
    * @fetchNextPage: 다음 페이지 데이터를 가져오는 함수.
@@ -48,7 +79,7 @@ export default function PostByCategory() {
    */
   const { data, fetchNextPage, refetch, hasNextPage, isStale } =
     useInfiniteQuery(
-      "getPostByCategory",
+      queryKey,
       ({ pageParam = 1 }) => getPostByCategory(pageParam),
       {
         getNextPageParam: (lastPage, allPages) => {
@@ -63,19 +94,12 @@ export default function PostByCategory() {
 
   useEffect(() => {
     if (isStale === false) {
-      if (category !== currentCategory) {
-        // 캐시 데이터가 남아있지만 카테고리가 변경 되었을때 refetch 처리
-        setPostList((current) => []);
-        refetch();
-      } else {
-        let listLength = 0;
-        data?.pages.map((page) => {
-          setPostList((prevList) => prevList.concat(page.postList));
-          listLength += page.postList.length;
-        });
-        setLoading(false);
-        setLength(listLength);
-      }
+      // 캐시 데이터가 남아있지만 카테고리가 변경 되었을때의 렌더링 처리
+      let addList: IPostList[] = [];
+      data?.pages.map((page) => {
+        addList = addList.concat(page.postList);
+      });
+      rendering(addList, category, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
@@ -93,38 +117,22 @@ export default function PostByCategory() {
 
   // 옵저버 등록
   useEffect(() => {
-    if (lastPostRef.current instanceof HTMLElement === true) {
-      const lastElement = lastPostRef.current;
+    // 카테고리 바꿨다가 다시 돌아오면 lastPostRef 가 null 되는점 해결하기
+    if (lastPostRef.current instanceof HTMLDivElement) {
+      const lastElement: HTMLDivElement = lastPostRef.current;
       const observer: IntersectionObserver = new IntersectionObserver(
         handleObserver,
         {
           threshold: 0,
         }
       );
-
       if (lastElement !== null) observer.observe(lastElement);
       return () => {
         if (lastElement !== null) observer.unobserve(lastElement);
       };
     }
-  }, [loading, handleObserver]);
+  }, [category, length, lastPostRef, handleObserver]);
 
-  const getCategoryIcon = (category: Category): ReactElement<SvgIconProps> => {
-    switch (category) {
-      case "직장": {
-        return <BusinessIcon />;
-      }
-      case "잡담": {
-        return <CoffeeIcon />;
-      }
-      case "기술": {
-        return <CodeIcon />;
-      }
-      default: {
-        return <PersonIcon />;
-      }
-    }
-  };
   return (
     <Box>
       {loading ? (
@@ -138,7 +146,7 @@ export default function PostByCategory() {
         />
       ) : (
         <Box className={styled.postWrap}>
-          {postList.map((post: IPostList, index: number) => {
+          {postList[category].map((post: IPostList, index: number) => {
             return <Post post={post} key={index} />;
           })}
           {length > 9 ? <Box ref={lastPostRef}>Loading..</Box> : ""}
@@ -149,7 +157,7 @@ export default function PostByCategory() {
 }
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { category, page } = context.query;
-  apiClient.prefetchInfiniteQuery("getPostByCategory", async () => {
+  apiClient.prefetchInfiniteQuery(["getPostByCategory", category], async () => {
     const result = await axios.get(`/post/category/${category}/${page}`);
     return result.data.postList;
   });
