@@ -42,7 +42,7 @@ export default function Post({ post, key }: IPostProps) {
         <Box className={styled.postInfo}>
           <Box className={styled.postCategory}>
             <Chip
-              icon={getCategoryIcon(post.category)}
+              icon={getCategoryIcon(String(post.category))}
               label={String(post.category)}
             ></Chip>
           </Box>
