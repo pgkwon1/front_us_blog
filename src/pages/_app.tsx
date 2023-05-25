@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import type { AppProps } from "next/app";
 import styled from "@/styles/Global.module.css";
-import { Box } from "@mui/material";
+import { Box, LinearProgress } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
@@ -11,6 +11,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Hydrate, QueryClientProvider } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+import { Router } from "next/router";
+
 export default function App({ Component, pageProps }: AppProps) {
   if (
     typeof Cookies.get("X-CSRF-TOKEN") === "undefined" ||
@@ -27,6 +31,13 @@ export default function App({ Component, pageProps }: AppProps) {
   }
 
   let persistor = persistStore(store);
+  NProgress.configure({
+    showSpinner: false,
+  });
+  Router.events.on("routeChangeStart", () => NProgress.start());
+  Router.events.on("routeChangeComplete", () => NProgress.done());
+  Router.events.on("routeChangeError", () => NProgress.done());
+
   return (
     <>
       <Provider store={store}>
