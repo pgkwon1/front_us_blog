@@ -5,14 +5,22 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "highlight.js";
 import "highlight.js/styles/vs2015.css";
-import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { IEditorProps } from "@/dto/posts/EditorDto";
+import { IRootState } from "@/dto/ReduxDto";
 
 const Editor = forwardRef(function Editor({
   editorRef,
   handleContents,
 }: IEditorProps) {
-  const [value, setValue] = useState("");
+  const editPostContents = useSelector(
+    (state: IRootState) => state.postReducer.editPostContents
+  );
+  const editMode = useSelector(
+    (state: IRootState) => state.postReducer.editMode
+  );
+  const [value, setValue] = useState(editMode ? editPostContents : "");
+
   hljs.configure({
     languages: ["javascript", "ruby", "python", "rust"],
   });

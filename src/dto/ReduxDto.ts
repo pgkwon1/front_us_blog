@@ -12,4 +12,6 @@ interface IPostReducer {
   currentPostId: string;
   currentTag: string;
   currentCategory: string;
+  editMode: boolean;
+  editPostContents: string;
 }

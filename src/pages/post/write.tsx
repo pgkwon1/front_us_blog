@@ -12,10 +12,15 @@ import {
 import styled from "../../styles/posts/Posts.module.css";
 import dynamic from "next/dynamic";
 import { WithContext as ReactTags } from "react-tag-input";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { IAddTagDto, IPostWriteForm } from "@/dto/PostDto";
+import {
+  Category,
+  IAddTagDto,
+  IPostByTags,
+  IPostWriteForm,
+} from "@/dto/PostDto";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { IRootState } from "@/dto/ReduxDto";
@@ -27,27 +32,44 @@ const TextEditor = dynamic(
     ssr: false,
   }
 );
-
-export default function PostWrite() {
+interface IEditData {
+  title: string;
+  category: Category;
+  contents: string;
+  Tags: IPostByTags[];
+}
+export default function PostWrite({
+  editData,
+  handleEdit = () => {},
+  isEdit = false,
+}: {
+  editData: IEditData;
+  handleEdit: Function;
+  isEdit: boolean;
+}) {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<IPostWriteForm>({
     mode: "onSubmit",
     defaultValues: {
-      title: "",
-      contents: "",
+      title: editData?.title || "",
+      contents: editData?.contents || "",
       tags: [] as IAddTagDto[],
     },
   });
   const author = useSelector((state: IRootState) => state.userReducer.userId);
+  const editMode = useSelector(
+    (state: IRootState) => state.postReducer.editMode
+  );
   const [contentsErr, setContentsErr] = useState(false);
   const [writeData, setWriteData] = useState({
     author,
     title: "",
     tags: [] as IAddTagDto[],
-    category: "",
+    category: "" as Category,
     contents: "",
   });
   const editorRef = useRef<ReactQuill>(null);
@@ -97,14 +119,37 @@ export default function PostWrite() {
   };
 
   const onSubmit = async () => {
-    const contents = editorRef.current !== null ? editorRef.current.value : "";
-    if (contents === "") {
-      setContentsErr(true);
-      return false;
+    const contents = String(
+      editorRef.current !== null ? editorRef.current.value : ""
+    );
+    if (isEdit === true) {
+      writeData.contents = contents;
+      handleEdit(writeData);
+    } else {
+      if (contents === "") {
+        setContentsErr(true);
+        return false;
+      }
+      const { data } = await frontApi.post("/post/write", writeData);
+      push(`/post/${data}`);
     }
-    const { data } = await frontApi.post("/post/write", writeData);
-    push(`/post/${data}`);
   };
+
+  useEffect(() => {
+    if (editMode === true) {
+      setWriteData((current) => {
+        return {
+          ...current,
+          title: editData?.title || current.title,
+          category: editData?.category || current.category,
+          tags: editData?.Tags?.length > 0 ? editData.Tags : [],
+        };
+      });
+      setValue("title", editData?.title);
+      setValue("category", editData?.category);
+      setValue("tags", editData?.Tags);
+    }
+  }, [editData, editMode]);
   return (
     <form onSubmit={handleSubmit(onSubmit)} name="postForm">
       <Box className={styled.writeWrap}>
@@ -113,6 +158,9 @@ export default function PostWrite() {
             카테고리
           </InputLabel>
           <NativeSelect
+            defaultChecked={true}
+            defaultValue={writeData.category}
+            value={writeData.category}
             inputProps={{
               name: "category",
               id: "uncontrolled-native",
@@ -145,11 +193,13 @@ export default function PostWrite() {
               message: "3글자 이상 입력해주세요.",
             },
           })}
+          name={"title"}
           onChange={(e) =>
             handleWriteData({ name: "title", value: e.target.value })
           }
           label="제목"
           variant="standard"
+          value={writeData.title}
         />
         {errors.title ? (
           <Alert severity="error">{errors.title?.message}</Alert>
@@ -160,7 +210,7 @@ export default function PostWrite() {
         <TextEditor editorRef={editorRef} handleContents={handleContents} />
         {contentsErr ? <Alert severity="error">내용을 입력해주세요</Alert> : ""}
         <Box className={styled.postTag} component="ul">
-          {writeData.tags.map((tag: IAddTagDto, index) => {
+          {writeData.tags?.map((tag: IAddTagDto, index) => {
             return (
               <ListItem className={styled.tagWrap} key={index}>
                 <Chip
