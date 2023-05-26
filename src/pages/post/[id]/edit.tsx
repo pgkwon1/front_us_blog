@@ -7,8 +7,9 @@ import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import axios from "axios";
 import { dehydrate, useMutation, useQuery } from "react-query";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setEditMode, setEditPostContents } from "@/store/reducers/post";
+import { IRootState } from "@/dto/ReduxDto";
 
 export default function Edit() {
   const router = useRouter();
@@ -22,9 +23,11 @@ export default function Edit() {
   });
   const getQueryKey = useMemo(() => ["getPost", id], [id]);
   const editQueryKey = useMemo(() => ["getPost", id], [id]);
+  const userId = useSelector((state: IRootState) => state.userReducer.userId);
 
   const getPost = async () => {
     const result = await frontApi.get(`/post/${id}`);
+    if (result.data.post.author !== userId) router.push("/");
     setEditData(result.data.post);
     dispatch(setEditPostContents(result.data.post.contents));
   };
