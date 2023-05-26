@@ -1,20 +1,11 @@
 import styled from "../../styles/posts/Posts.module.css";
-import {
-  Box,
-  Button,
-  Chip,
-  ListItem,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, ListItem, Typography } from "@mui/material";
 import { Avatar } from "@mui/joy";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import BusinessIcon from "@mui/icons-material/Business";
 import CodeIcon from "@mui/icons-material/Code";
 import CoffeeIcon from "@mui/icons-material/Coffee";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
@@ -48,8 +39,6 @@ export default function PostView() {
     like: false,
     unlike: false,
   });
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -119,42 +108,6 @@ export default function PostView() {
                   icon={getCategoryIcon(String(post.category))}
                   label={String(post.category)}
                 ></Chip>
-                <Box className={styled.expandMenu}>
-                  <Button>
-                    <ExpandMoreIcon
-                      onClick={() => setMenuOpen(true)}
-                      fontSize="large"
-                      aria-controls={
-                        menuOpen ? "demo-positioned-menu" : undefined
-                      }
-                      aria-haspopup="true"
-                      aria-expanded={menuOpen ? "true" : undefined}
-                    />
-                  </Button>
-                  <Menu
-                    id="demo-positioned-menu"
-                    aria-labelledby="demo-positioned-button"
-                    open={menuOpen}
-                    anchorEl={anchorEl}
-                    anchorOrigin={{
-                      horizontal: "left",
-                    }}
-                    transformOrigin={{
-                      horizontal: "left",
-                    }}
-                    onClose={(e) => setMenuOpen(false)}
-                  >
-                    <MenuItem onClick={() => setMenuOpen(true)}>
-                      Profile
-                    </MenuItem>
-                    <MenuItem onClick={() => setMenuOpen(true)}>
-                      Profile
-                    </MenuItem>
-                    <MenuItem onClick={() => setMenuOpen(true)}>
-                      Profile
-                    </MenuItem>
-                  </Menu>
-                </Box>
               </Box>
               <Box
                 sx={{
