@@ -34,10 +34,15 @@ export default function Edit() {
   };
 
   const editPost = async (editData: IPostWriteForm) => {
-    await frontApi.patch(`/post/edit/`, editData);
+    await frontApi.patch(`/post/edit`, editData);
   };
   const handleEdit = async (editData: IPostWriteForm) => {
-    await editMutation.mutate(editData);
+    await editMutation.mutate(editData, {
+      onSettled(data, error, variables, context) {
+        apiClient.setQueryData(["getPost", id], variables);
+        router.push(`/post/${id}`);
+      },
+    });
   };
   const editMutation = useMutation(editQueryKey, editPost);
   useQuery(getQueryKey, getPost);
