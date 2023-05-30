@@ -33,6 +33,7 @@ const TextEditor = dynamic(
   }
 );
 interface IEditData {
+  id: string;
   title: string;
   category: Category;
   contents: string;
@@ -66,6 +67,7 @@ export default function PostWrite({
   );
   const [contentsErr, setContentsErr] = useState(false);
   const [writeData, setWriteData] = useState({
+    id: "",
     author,
     title: "",
     tags: [] as IAddTagDto[],
@@ -140,6 +142,7 @@ export default function PostWrite({
       setWriteData((current) => {
         return {
           ...current,
+          id: editData?.id || current.id,
           title: editData?.title || current.title,
           category: editData?.category || current.category,
           tags: editData?.Tags?.length > 0 ? editData.Tags : [],

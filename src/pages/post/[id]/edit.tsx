@@ -16,6 +16,7 @@ export default function Edit() {
   const dispatch = useDispatch();
   const id = router.query.id;
   const [editData, setEditData] = useState({
+    id: "",
     title: "",
     Tags: [] as IPostByTags[],
     contents: "",
@@ -33,7 +34,7 @@ export default function Edit() {
   };
 
   const editPost = async (editData: IPostWriteForm) => {
-    await frontApi.patch(`/post/edit/${id}`, editData);
+    await frontApi.patch(`/post/edit/`, editData);
   };
   const handleEdit = async (editData: IPostWriteForm) => {
     await editMutation.mutate(editData);
