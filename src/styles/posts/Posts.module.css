@@ -24,6 +24,9 @@
   font-weight: bold;
 }
 .postCategory {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 1.3rem;
   font-weight: bold;
 }
