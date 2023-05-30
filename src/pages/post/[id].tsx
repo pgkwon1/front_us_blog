@@ -17,7 +17,7 @@ import moment from "moment-timezone";
 import Like from "@/components/post/like";
 import { useDispatch, useSelector } from "react-redux";
 import { IRootState } from "@/dto/ReduxDto";
-import { IPostList, IPostByLikes, IPostByTags } from "@/dto/PostDto";
+import { IPostList, IPostByLikes, IPostByTags, Category } from "@/dto/PostDto";
 import axios from "axios";
 import Comment from "@/components/post/comment/comment";
 import { setCurrentPostId } from "@/store/reducers/post";
@@ -61,7 +61,7 @@ export default function PostView() {
 
   const getCategoryIcon = useMemo(() => {
     // eslint-disable-next-line react/display-name
-    return (category: string) => {
+    return (category: Category) => {
       switch (category) {
         case "직장":
           return <BusinessIcon />;
@@ -105,7 +105,7 @@ export default function PostView() {
             <Box className={styled.postInfo}>
               <Box className={styled.postCategory}>
                 <Chip
-                  icon={getCategoryIcon(String(post.category))}
+                  icon={getCategoryIcon(post.category)}
                   label={String(post.category)}
                 ></Chip>
               </Box>
