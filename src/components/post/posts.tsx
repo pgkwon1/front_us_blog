@@ -8,6 +8,7 @@ import styled from "@/styles/posts/Posts.module.css";
 import { IPostListResponse, IPostList } from "@/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
 import Post from "./post";
+import Link from "next/link";
 
 export default function Posts() {
   const [postList, setPostList] = useState([]);
@@ -79,6 +80,26 @@ export default function Posts() {
         <Skeleton variant="rectangular" width={210} height={118} />
       ) : (
         <Box className={styled.postWrap}>
+          <Link href={"/post/write"}>
+            <Box
+              sx={{
+                padding: "1rem",
+                background: "#fff",
+                marginBottom: "1rem",
+                borderRadius: "10px",
+              }}
+            >
+              <Box
+                sx={{
+                  color: "#857d7d",
+                  padding: "1.5rem",
+                  background: "#e9e9e9",
+                }}
+              >
+                오늘 공부한 것을 기록해보세요!
+              </Box>
+            </Box>
+          </Link>
           {postList.map((post: IPostList, index: number) => {
             return <Post post={post} key={index} />;
           })}
