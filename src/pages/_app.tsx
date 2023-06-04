@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import type { AppProps } from "next/app";
 import styled from "@/styles/Global.module.css";
-import { Box, Grid, LinearProgress } from "@mui/material";
+import { Box, Grid, Hidden, LinearProgress } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
@@ -48,14 +48,17 @@ export default function App({ Component, pageProps }: AppProps) {
               <Layout>
                 <Grid
                   container
-                  spacing={2}
+                  spacing={4}
                   sx={{ flexGrow: 1 }}
                   className={styled.wrap}
                 >
-                  <Grid xs={6} md={4}>
-                    <SideBar />
-                  </Grid>
-                  <Grid xs={6} md={8}>
+                  <Hidden mdDown>
+                    <Grid md={4}>
+                      <SideBar />
+                    </Grid>
+                  </Hidden>
+
+                  <Grid xs={12} md={8}>
                     <Component {...pageProps} />
                   </Grid>
                 </Grid>
