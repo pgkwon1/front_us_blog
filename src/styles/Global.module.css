@@ -22,6 +22,17 @@
 .wrap {
   max-width: 1000px;
   padding: 4rem;
-  margin: 0 auto;
-  clear: both;
+  margin: 0 auto !important;
+}
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  gap: 2rem;
+}
+
+.sideberMenuWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }

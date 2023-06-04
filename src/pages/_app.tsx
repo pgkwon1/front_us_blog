@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import type { AppProps } from "next/app";
 import styled from "@/styles/Global.module.css";
-import { Box, LinearProgress } from "@mui/material";
+import { Box, Grid, LinearProgress } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
@@ -14,6 +14,7 @@ import frontApi from "@/modules/apiInstance";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { Router } from "next/router";
+import SideBar from "@/components/layout/SideBar";
 
 export default function App({ Component, pageProps }: AppProps) {
   if (
@@ -45,9 +46,19 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={apiClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Layout>
-                <Box className={styled.wrap}>
-                  <Component {...pageProps} />
-                </Box>
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{ flexGrow: 1 }}
+                  className={styled.wrap}
+                >
+                  <Grid xs={6} md={4}>
+                    <SideBar />
+                  </Grid>
+                  <Grid xs={6} md={8}>
+                    <Component {...pageProps} />
+                  </Grid>
+                </Grid>
               </Layout>
             </Hydrate>
           </QueryClientProvider>
