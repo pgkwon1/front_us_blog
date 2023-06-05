@@ -97,3 +97,11 @@ export default function Login() {
     </Box>
   );
 }
+
+export const getServerSideProps = () => {
+  return {
+    props: {
+      isSideBarRender: false,
+    },
+  };
+};

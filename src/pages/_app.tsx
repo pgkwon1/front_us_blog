@@ -47,13 +47,24 @@ export default function App({ Component, pageProps }: AppProps) {
             <Hydrate state={pageProps.dehydratedState}>
               <Layout>
                 <Grid container sx={{ flexGrow: 1 }} className={styled.wrap}>
-                  <Hidden mdDown>
-                    <Grid md={3}>
-                      <SideBar />
-                    </Grid>
-                  </Hidden>
+                  {pageProps && pageProps.isSideBarRender === false ? (
+                    ""
+                  ) : (
+                    <Hidden mdDown>
+                      <Grid sx={{ flex: "0 0 30%" }} item md={3}>
+                        <SideBar />
+                      </Grid>
+                    </Hidden>
+                  )}
 
-                  <Grid xs={12} md={8}>
+                  <Grid
+                    item
+                    xs={12}
+                    md={
+                      pageProps && pageProps.isSideBarRender === false ? 12 : 8
+                    }
+                    gridAutoColumns={"auto"}
+                  >
                     <Component {...pageProps} />
                   </Grid>
                 </Grid>
