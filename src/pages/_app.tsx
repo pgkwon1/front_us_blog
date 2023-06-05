@@ -46,14 +46,9 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={apiClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Layout>
-                <Grid
-                  container
-                  spacing={4}
-                  sx={{ flexGrow: 1 }}
-                  className={styled.wrap}
-                >
+                <Grid container sx={{ flexGrow: 1 }} className={styled.wrap}>
                   <Hidden mdDown>
-                    <Grid md={4}>
+                    <Grid md={3}>
                       <SideBar />
                     </Grid>
                   </Hidden>
