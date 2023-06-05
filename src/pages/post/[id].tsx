@@ -29,6 +29,10 @@ import { IPostList, IPostByLikes, IPostByTags, Category } from "@/dto/PostDto";
 import axios from "axios";
 import Comment from "@/components/post/comment/comment";
 import { setCurrentPostId } from "@/store/reducers/post";
+import {
+  DEFAULT_REACT_QUERY_CACHE_TIME,
+  DEFAULT_REACT_QUERY_STALE_TIME,
+} from "@/constants/react-query.constants";
 
 export default function PostView() {
   const [post, setPost] = useState<IPostList>({
@@ -78,8 +82,8 @@ export default function PostView() {
     return true;
   };
   const { isLoading, data, refetch } = useQuery<IPostList>(queryKey, getPost, {
-    staleTime: 10 * 1000,
-    cacheTime: 10 * 1000,
+    staleTime: DEFAULT_REACT_QUERY_STALE_TIME,
+    cacheTime: DEFAULT_REACT_QUERY_CACHE_TIME,
   });
 
   const { mutate, isSuccess } = useMutation(["deletePost", id], deletePost);
