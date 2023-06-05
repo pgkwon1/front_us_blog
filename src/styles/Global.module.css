@@ -20,9 +20,10 @@
 }
 
 .wrap {
-  max-width: 1000px;
+  max-width: 1200px;
   padding: 4rem;
   margin: 0 auto !important;
+  grid-column-gap: 2.65rem;
 }
 .sidebar {
   display: flex;
