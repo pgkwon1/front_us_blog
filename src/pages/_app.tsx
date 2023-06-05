@@ -51,7 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
                     ""
                   ) : (
                     <Hidden mdDown>
-                      <Grid sx={{ flex: "0 0 30%" }} item md={3}>
+                      <Grid item md={3}>
                         <SideBar />
                       </Grid>
                     </Hidden>
