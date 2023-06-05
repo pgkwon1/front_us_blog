@@ -8,12 +8,11 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 export default function SideBar() {
   return (
     <Box className={styled.sidebarWrap}>
-      <Link href="/post/write">
-        <Button variant="outlined">글쓰기</Button>
-      </Link>
-
       <Box className={styled.sidebar}>
         <Box className={styled.sideberMenuWrap}>
+          <Link href="/post/write">
+            <Button variant="outlined">글쓰기</Button>
+          </Link>
           <Link href="/">
             <Box>전체</Box>
           </Link>
@@ -35,8 +34,12 @@ export default function SideBar() {
         </Box>
         <Box>
           <Typography>인기 많은 태그</Typography>
-          <Box sx={{ border: "1px solid black", padding: "2rem" }}></Box>
-          <Chip label={"# React"}></Chip>
+          <Box sx={{ padding: "0.1rem" }}>
+            <Chip label={"# Reacdddddddddt"}></Chip>{" "}
+            <Chip label={"# React"}></Chip>
+            <Chip label={"# React"}></Chip>
+            <Chip label={"# React"}></Chip>
+          </Box>
         </Box>
       </Box>
     </Box>
