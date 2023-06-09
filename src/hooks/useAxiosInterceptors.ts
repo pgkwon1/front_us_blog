@@ -19,9 +19,14 @@ export default async function useAxiosInterceptors() {
       if (!config.headers) return config;
       const token = localStorage.getItem("token");
       const csrfToken = Cookies.get("X-CSRF-TOKEN");
-      if ("X-CSRF-TOKEN" in config.headers === false) {
-        config.headers._csrf = csrfToken;
+
+      if (
+        "X-CSRF-TOKEN" in config.headers === false ||
+        config.headers?.["X-CSRF-TOKEN"] === undefined
+      ) {
+        config.headers["X-CSRF-TOKEN"] = csrfToken;
       }
+
       if (config.headers && token) {
         config.headers.authorization = `Bearer ${token}`;
         return config;
@@ -36,7 +41,8 @@ export default async function useAxiosInterceptors() {
   frontApi.interceptors.response.use(
     async (response) => {
       const { config, data } = response;
-      if (data.expired === true) {
+
+      if (data.message === "access token expired") {
         // 토큰 만료
         const { authorization } = config.headers;
         const result = await axios.post(
@@ -50,12 +56,12 @@ export default async function useAxiosInterceptors() {
             },
           }
         );
-        if (result.data.error === true) {
-          // refresh 토큰도 만료됐을때 로그아웃 구현하기
+        if (result.data.message === "refresh token expired") {
           dispatch(setLoginState(0));
           dispatch(setCurrentUserId(""));
           localStorage.removeItem("token");
           push("/member/login");
+          return response;
         } else {
           localStorage.setItem("token", result.data.newAccessToken);
           config.headers[
