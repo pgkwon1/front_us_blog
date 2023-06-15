@@ -154,3 +154,11 @@ export default function Register() {
     </form>
   );
 }
+
+export const getServerSideProps = () => {
+  return {
+    props: {
+      isSideBarRender: false,
+    },
+  };
+};
