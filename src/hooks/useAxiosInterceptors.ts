@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { useRouter } from "next/router";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
-import frontApi from "@/modules/apiInstance";
+import frontApi, { formDataApi } from "@/modules/apiInstance";
 
 type Props = {
   children?: ReactNode;
@@ -56,7 +56,12 @@ export default async function useAxiosInterceptors() {
             },
           }
         );
-        if (result.data.message === "refresh token expired") {
+
+        const { message } = result.data;
+        if (
+          message === "refresh token expired" ||
+          message === "비정상적인 접근입니다."
+        ) {
           dispatch(setLoginState(0));
           dispatch(setCurrentUserId(""));
           localStorage.removeItem("token");
