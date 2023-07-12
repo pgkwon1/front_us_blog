@@ -24,6 +24,10 @@ import { IRootState } from "@/dto/ReduxDto";
 import Error from "next/error";
 import axios from "axios";
 import Post from "@/components/post/post";
+import {
+  DEFAULT_REACT_QUERY_CACHE_TIME,
+  DEFAULT_REACT_QUERY_STALE_TIME,
+} from "@/constants/react-query.constants";
 
 export default function PostbyTag() {
   const router = useRouter();
@@ -70,8 +74,8 @@ export default function PostbyTag() {
           return nextPage;
         else undefined;
       },
-      staleTime: 120 * 1000,
-      cacheTime: 120 * 1000,
+      staleTime: DEFAULT_REACT_QUERY_STALE_TIME,
+      cacheTime: DEFAULT_REACT_QUERY_CACHE_TIME,
     }
   );
 

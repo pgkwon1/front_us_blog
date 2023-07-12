@@ -15,6 +15,10 @@ import { IRootState } from "@/dto/ReduxDto";
 import { IPostList } from "@/dto/PostDto";
 import axios from "axios";
 import Post from "@/components/post/post";
+import {
+  DEFAULT_REACT_QUERY_CACHE_TIME,
+  DEFAULT_REACT_QUERY_STALE_TIME,
+} from "@/constants/react-query.constants";
 
 interface IPostByCategory {
   [key: string]: any;
@@ -86,8 +90,8 @@ export default function PostByCategory() {
           const nextPage = allPages.length + 1;
           return lastPage.postList.length !== 0 ? nextPage : undefined;
         },
-        staleTime: 120000,
-        cacheTime: 120000,
+        staleTime: DEFAULT_REACT_QUERY_STALE_TIME,
+        cacheTime: DEFAULT_REACT_QUERY_CACHE_TIME,
         refetchOnMount: false,
       }
     );

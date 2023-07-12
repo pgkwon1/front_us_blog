@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/Layout";
 import type { AppProps } from "next/app";
 import styled from "@/styles/Global.module.css";
-import { Box, LinearProgress } from "@mui/material";
+import { Box, Grid, Hidden, LinearProgress } from "@mui/material";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { Provider } from "react-redux";
@@ -14,6 +14,7 @@ import frontApi from "@/modules/apiInstance";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { Router } from "next/router";
+import SideBar from "@/components/layout/SideBar";
 
 export default function App({ Component, pageProps }: AppProps) {
   if (
@@ -45,9 +46,28 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={apiClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <Layout>
-                <Box className={styled.wrap}>
-                  <Component {...pageProps} />
-                </Box>
+                <Grid container sx={{ flexGrow: 1 }} className={styled.wrap}>
+                  {pageProps && pageProps.isSideBarRender === false ? (
+                    ""
+                  ) : (
+                    <Hidden mdDown>
+                      <Grid item md={3}>
+                        <SideBar />
+                      </Grid>
+                    </Hidden>
+                  )}
+
+                  <Grid
+                    item
+                    xs={12}
+                    md={
+                      pageProps && pageProps.isSideBarRender === false ? 12 : 8
+                    }
+                    gridAutoColumns={"auto"}
+                  >
+                    <Component {...pageProps} />
+                  </Grid>
+                </Grid>
               </Layout>
             </Hydrate>
           </QueryClientProvider>
