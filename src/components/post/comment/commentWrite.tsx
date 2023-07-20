@@ -1,7 +1,7 @@
 import { IRootState } from "@/dto/ReduxDto";
 import frontApi from "@/modules/apiInstance";
 import { Textarea } from "@mui/joy";
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, Box, Button, FormControl, Typography } from "@mui/material";
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
@@ -18,9 +18,24 @@ export default function CommentWrite({
   const { userId } = useSelector((state: IRootState) => state.userReducer);
 
   const [contents, setContents] = useState("");
+  const [errorInfo, setErrorInfo] = useState({
+    error: false,
+    message: "",
+  });
 
-  async function handleComments(): Promise<void> {
+  async function handleComments(): Promise<void | boolean> {
+    if (!contents) {
+      setErrorInfo({
+        error: true,
+        message: "댓글을 입력해주세요",
+      });
+      return false;
+    }
     const result = await commentWriteMutation.mutate();
+    setErrorInfo({
+      error: false,
+      message: "",
+    });
   }
   async function writeComments(): Promise<void> {
     await frontApi.post(`/comment/write`, {
@@ -48,9 +63,16 @@ export default function CommentWrite({
         minRows={3}
         value={contents}
       />
+      {errorInfo.error ? (
+        <Alert color="error" sx={{ marginTop: "1rem" }}>
+          {errorInfo.message}
+        </Alert>
+      ) : (
+        ""
+      )}
       <Button
-        sx={{ marginTop: "1rem" }}
         onClick={handleComments}
+        sx={{ marginTop: "1rem" }}
         variant="contained"
       >
         작성
