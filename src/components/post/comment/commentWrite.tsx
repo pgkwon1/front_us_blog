@@ -31,7 +31,7 @@ export default function CommentWrite({
       });
       return false;
     }
-    const result = await commentWriteMutation.mutate();
+    await commentWriteMutation.mutate();
     setErrorInfo({
       error: false,
       message: "",
