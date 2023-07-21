@@ -1,8 +1,9 @@
 import { IRootState } from "@/dto/ReduxDto";
 import frontApi from "@/modules/apiInstance";
 import { Textarea } from "@mui/joy";
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, Box, Button, FormControl, Typography } from "@mui/material";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 
@@ -19,8 +20,13 @@ export default function CommentWrite({
 
   const [contents, setContents] = useState("");
 
-  async function handleComments(): Promise<void> {
-    const result = await commentWriteMutation.mutate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  async function handleComments(): Promise<void | boolean> {
+    await commentWriteMutation.mutate();
   }
   async function writeComments(): Promise<void> {
     await frontApi.post(`/comment/write`, {
@@ -42,19 +48,22 @@ export default function CommentWrite({
 
   return (
     <Box>
-      <Typography>댓글</Typography>
-      <Textarea
-        onChange={(e) => setContents(e.target.value)}
-        minRows={3}
-        value={contents}
-      />
-      <Button
-        sx={{ marginTop: "1rem" }}
-        onClick={handleComments}
-        variant="contained"
-      >
-        작성
-      </Button>
+      <form onSubmit={handleSubmit(handleComments)}>
+        <Typography>댓글</Typography>
+        <Textarea
+          {...register("comments", { required: true })}
+          onChange={(e) => setContents(e.target.value)}
+          minRows={3}
+          value={contents}
+          {...(errors.comments && {
+            error: true,
+            placeholder: "댓글 내용을 입력해주세요.",
+          })}
+        />
+        <Button type="submit" sx={{ marginTop: "1rem" }} variant="contained">
+          작성
+        </Button>
+      </form>
     </Box>
   );
 }
