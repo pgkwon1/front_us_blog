@@ -3,6 +3,7 @@ import frontApi from "@/modules/apiInstance";
 import { Textarea } from "@mui/joy";
 import { Alert, Box, Button, FormControl, Typography } from "@mui/material";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import { useSelector } from "react-redux";
 
@@ -18,24 +19,14 @@ export default function CommentWrite({
   const { userId } = useSelector((state: IRootState) => state.userReducer);
 
   const [contents, setContents] = useState("");
-  const [errorInfo, setErrorInfo] = useState({
-    error: false,
-    message: "",
-  });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   async function handleComments(): Promise<void | boolean> {
-    if (!contents) {
-      setErrorInfo({
-        error: true,
-        message: "댓글을 입력해주세요",
-      });
-      return false;
-    }
     await commentWriteMutation.mutate();
-    setErrorInfo({
-      error: false,
-      message: "",
-    });
   }
   async function writeComments(): Promise<void> {
     await frontApi.post(`/comment/write`, {
@@ -57,26 +48,22 @@ export default function CommentWrite({
 
   return (
     <Box>
-      <Typography>댓글</Typography>
-      <Textarea
-        onChange={(e) => setContents(e.target.value)}
-        minRows={3}
-        value={contents}
-      />
-      {errorInfo.error ? (
-        <Alert color="error" sx={{ marginTop: "1rem" }}>
-          {errorInfo.message}
-        </Alert>
-      ) : (
-        ""
-      )}
-      <Button
-        onClick={handleComments}
-        sx={{ marginTop: "1rem" }}
-        variant="contained"
-      >
-        작성
-      </Button>
+      <form onSubmit={handleSubmit(handleComments)}>
+        <Typography>댓글</Typography>
+        <Textarea
+          {...register("comments", { required: true })}
+          onChange={(e) => setContents(e.target.value)}
+          minRows={3}
+          value={contents}
+          {...(errors.comments && {
+            error: true,
+            placeholder: "댓글 내용을 입력해주세요.",
+          })}
+        />
+        <Button type="submit" sx={{ marginTop: "1rem" }} variant="contained">
+          작성
+        </Button>
+      </form>
     </Box>
   );
 }
