@@ -14,18 +14,19 @@ export default async function useAxiosInterceptors() {
   const { push } = useRouter();
   const dispatch = useDispatch();
 
+  function setLogOut() {
+    dispatch(setLoginState(0));
+    dispatch(setCurrentUserId(""));
+    localStorage.removeItem("token");
+    push("/member/login");
+  }
   frontApi.interceptors.request.use(
     (config) => {
       if (!config.headers) return config;
       const token = localStorage.getItem("token");
       const csrfToken = Cookies.get("X-CSRF-TOKEN");
 
-      if (
-        "X-CSRF-TOKEN" in config.headers === false ||
-        config.headers?.["X-CSRF-TOKEN"] === undefined
-      ) {
-        config.headers["X-CSRF-TOKEN"] = csrfToken;
-      }
+      config.headers["X-CSRF-TOKEN"] = csrfToken;
 
       if (config.headers && token) {
         config.headers.authorization = `Bearer ${token}`;
@@ -58,6 +59,74 @@ export default async function useAxiosInterceptors() {
         );
 
         const { message } = result.data;
+        const setLogOutMessage = [
+          "refresh token expired",
+          "비정상적인 접근입니다.",
+          "invalid csrf token",
+        ];
+        if (setLogOutMessage.includes(message)) {
+          setLogOut();
+          return response;
+        } else {
+          localStorage.setItem("token", result.data.newAccessToken);
+          config.headers[
+            "Authorization"
+          ] = `Bearer ${result.data.newAccessToken}`;
+          return frontApi(config);
+        }
+      }
+
+      return response;
+    },
+    async (error) => {
+      return error;
+    }
+  );
+
+  // formData
+  formDataApi.interceptors.request.use(
+    (config) => {
+      if (!config.headers) return config;
+      const token = localStorage.getItem("token");
+      const csrfToken = Cookies.get("X-CSRF-TOKEN");
+
+      if (
+        "X-CSRF-TOKEN" in config.headers === false ||
+        config.headers?.["X-CSRF-TOKEN"] === undefined
+      ) {
+        config.headers["X-CSRF-TOKEN"] = csrfToken;
+      }
+
+      if (config.headers && token) {
+        config.headers.authorization = `Bearer ${token}`;
+        return config;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  formDataApi.interceptors.response.use(
+    async (response) => {
+      const { config, data } = response;
+
+      if (data.message === "access token expired") {
+        // 토큰 만료
+        const { authorization } = config.headers;
+        const result = await axios.post(
+          "/api/retoken",
+          {
+            accessToken: authorization.replace("Bearer ", ""),
+          },
+          {
+            headers: {
+              "X-CSRF-TOKEN": Cookies.get("X-CSRF-TOKEN"),
+            },
+          }
+        );
+        const { message } = result.data;
         if (
           message === "refresh token expired" ||
           message === "비정상적인 접근입니다."
@@ -72,7 +141,7 @@ export default async function useAxiosInterceptors() {
           config.headers[
             "Authorization"
           ] = `Bearer ${result.data.newAccessToken}`;
-          return frontApi(config);
+          return formDataApi(config);
         }
       }
 
