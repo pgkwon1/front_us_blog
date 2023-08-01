@@ -2,8 +2,6 @@ export interface IRootState {
   globalReducer: IGlobalReducer;
   userReducer: IUserReducer;
   postReducer: IPostReducer;
-  profileReducer: IProfileReducer;
-  projectReducer: IProjectReducer;
 }
 
 interface IGlobalReducer {
