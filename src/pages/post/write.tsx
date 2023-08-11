@@ -25,6 +25,7 @@ import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { IRootState } from "@/dto/ReduxDto";
 import ReactQuill from "react-quill";
+import { useMutation } from "react-query";
 
 const TextEditor = dynamic(
   async () => await import("@/components/post/editor"),
@@ -120,10 +121,11 @@ export default function PostWrite({
     setWriteData({ ...writeData, [name]: value });
   };
 
-  const onSubmit = async () => {
+  const handleWrite = async () => {
     const contents = String(
       editorRef.current !== null ? editorRef.current.value : ""
     );
+
     if (isEdit === true) {
       writeData.contents = contents;
       handleEdit(writeData);
@@ -132,10 +134,23 @@ export default function PostWrite({
         setContentsErr(true);
         return false;
       }
-      const { data } = await frontApi.post("/post/write", writeData);
-      push(`/post/${data}`);
+
+      await writeMutation.mutate();
     }
   };
+
+  const postWrite = async () => {
+    const result = await frontApi.post("/post/write", writeData);
+    return result.data;
+  };
+
+  const writeMutation = useMutation("postWrite", postWrite, {
+    onSuccess(data) {
+      if (!data.error) {
+        push(`/post/${data}`);
+      }
+    },
+  });
 
   useEffect(() => {
     if (editMode === true) {
@@ -154,7 +169,7 @@ export default function PostWrite({
     }
   }, [editData, editMode]);
   return (
-    <form onSubmit={handleSubmit(onSubmit)} name="postForm">
+    <form onSubmit={handleSubmit(handleWrite)} name="postForm">
       <Box className={styled.writeWrap}>
         <FormControl>
           <InputLabel variant="standard" htmlFor="uncontrolled-native">

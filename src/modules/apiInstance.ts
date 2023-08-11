@@ -10,4 +10,12 @@ const frontApi: AxiosInstance = axios.create({
   },
 });
 
+export const formDataApi: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_FRONT_API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "multipart/form-data",
+    "X-CSRF-TOKEN": Cookies.get("X-CSRF-TOKEN"),
+  },
+});
 export default frontApi;

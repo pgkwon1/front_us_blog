@@ -31,11 +31,18 @@ export default function Header() {
             </Typography>
           </Link>
           {login_state ? (
-            <Link href={"/member/logout"}>
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                LOGOUT
-              </Typography>
-            </Link>
+            <>
+              <Link href={"/member/logout"}>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  LOGOUT
+                </Typography>
+              </Link>
+              <Link href={"/member/profile"}>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                  PROFILE
+                </Typography>
+              </Link>
+            </>
           ) : (
             <Link href={"/member/login"}>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
