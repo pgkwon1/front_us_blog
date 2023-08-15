@@ -1,5 +1,3 @@
-import { ISkillsAttr } from "./SkillsDto";
-
 export interface IProjectInfoAttr {
   userId: string;
   projectName: string;
