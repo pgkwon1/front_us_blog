@@ -18,7 +18,13 @@ import CodeIcon from "@mui/icons-material/Code";
 import SendIcon from "@mui/icons-material/Send";
 import styled from "@/styles/member/Project.module.css";
 
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useMutation, useQuery } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
@@ -100,25 +106,28 @@ export default function ProjectWriteComponent({
     });
   };
 
-  const handleSkillList = (event: any, newValue: ISkillsAttr): boolean => {
-    if (!newValue) return false;
-    const { id, label, category } = newValue;
-    setProjectInfo((current) => {
-      const { Skills } = current;
-      if (label !== undefined) {
-        Skills.push({
-          id,
-          name: label as string,
-          category,
-        });
-      }
+  const handleSkillList = (
+    event: SyntheticEvent<Element, Event>,
+    newValue: any
+  ): void => {
+    if (newValue) {
+      const { id, label, category } = newValue;
+      setProjectInfo((current) => {
+        const { Skills } = current;
+        if (label !== undefined) {
+          Skills.push({
+            id,
+            name: label as string,
+            category,
+          });
+        }
 
-      return {
-        ...current,
-        Skills,
-      };
-    });
-    return true;
+        return {
+          ...current,
+          Skills,
+        };
+      });
+    }
   };
   const handleCreate = async () => {
     const handleData = Object.assign(projectInfo, {
@@ -151,7 +160,6 @@ export default function ProjectWriteComponent({
         Skills,
       };
     });
-    console.log(skillsId);
 
     if (edit && skillsId) {
       projectInfo.apiSkillData?.includes(skillsId)
@@ -307,13 +315,12 @@ export default function ProjectWriteComponent({
         case "collaboration":
         case "methodology":
         case "testing":
-          return "success";
         case "design":
         case "marketing":
         case "analytics":
         case "search engine":
         case "advertising":
-          return "info";
+          return "success";
         default:
           return "neutral";
       }
@@ -324,7 +331,7 @@ export default function ProjectWriteComponent({
     <form onSubmit={handleSubmit(edit ? handleEdit : handleCreate)}>
       <Box className={styled.writeWrap}>
         <Box>
-          <Chip>카테고리</Chip>
+          <Chip color="primary">카테고리</Chip>
         </Box>
         <Box className={styled.writeContainer}>
           <InputLabel htmlFor="projectName">
@@ -422,10 +429,6 @@ export default function ProjectWriteComponent({
             direction={{ xs: "row", sm: "row" }}
           >
             {projectInfo?.Skills.map((skill, index) => {
-              {
-                console.log(skill.ProjectsSkills);
-              }
-
               return (
                 <Chip
                   variant="outlined"
@@ -452,7 +455,7 @@ export default function ProjectWriteComponent({
             id="skill"
             freeSolo
             placeholder="기술을 선택해주세요."
-            options={(data || []).map((skillInfo: ISkillsAttr) => {
+            options={data.map((skillInfo: ISkillsAttr) => {
               const { id, name, category } = skillInfo;
               return {
                 id,
