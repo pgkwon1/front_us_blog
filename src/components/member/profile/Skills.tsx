@@ -21,7 +21,7 @@ export default function Skills({ skills }: ISkillsProp) {
 
   const handleChange = async (
     event: SyntheticEvent,
-    newValue: ISkillsAttr
+    newValue: any
   ): Promise<void> => {
     if (newValue === null) return;
     const { id, label, category } = newValue;
@@ -149,7 +149,7 @@ export default function Skills({ skills }: ISkillsProp) {
         case "analytics":
         case "search engine":
         case "advertising":
-          return "info";
+          return "success";
         default:
           return "neutral";
       }

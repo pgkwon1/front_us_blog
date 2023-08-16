@@ -59,7 +59,8 @@ export default function ProjectList() {
 
   const deleteMutation = useMutation(["deleteProject"], deleteProject, {
     onSuccess: (data) => {
-      if (data.error) {
+      const isError = typeof data !== "boolean" && "error" in data;
+      if (isError) {
         dispatch(
           setErrorInfo({
             isError: true,

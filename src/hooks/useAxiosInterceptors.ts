@@ -1,17 +1,18 @@
 import axios from "axios";
-import { ReactNode, useContext, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { useRouter } from "next/router";
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import frontApi, { formDataApi } from "@/modules/apiInstance";
+import { IRootState } from "@/dto/ReduxDto";
 
 type Props = {
   children?: ReactNode;
 };
 export default async function useAxiosInterceptors() {
   const { push } = useRouter();
+  const { userId } = useSelector((state: IRootState) => state.userReducer);
   const dispatch = useDispatch();
 
   function setLogOut() {
@@ -20,12 +21,19 @@ export default async function useAxiosInterceptors() {
     localStorage.removeItem("token");
     push("/member/login");
   }
+
+  async function getNewCsrfToken() {
+    const result = await axios.get("/api/getCsrf");
+    return result.data.CSRF_TOKEN;
+  }
   frontApi.interceptors.request.use(
     (config) => {
       if (!config.headers) return config;
       const token = localStorage.getItem("token");
       const csrfToken = Cookies.get("X-CSRF-TOKEN");
-
+      if (["put", "patch", "delete"].includes(config.method as string)) {
+        config.data["userId"] = userId;
+      }
       config.headers["X-CSRF-TOKEN"] = csrfToken;
 
       if (config.headers && token) {
@@ -65,6 +73,10 @@ export default async function useAxiosInterceptors() {
           "invalid csrf token",
         ];
         if (setLogOutMessage.includes(message)) {
+          if (message === "invalid csrf token") {
+            const csrfToken = await getNewCsrfToken();
+            Cookies.set("X-CSRF-TOKEN", csrfToken);
+          }
           setLogOut();
           return response;
         } else {
