@@ -1,24 +1,20 @@
-import { Alert, Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import styled from "@/styles/member/Login.module.css";
 import SendIcon from "@mui/icons-material/Send";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import frontApi from "@/modules/apiInstance";
 import { setCurrentUserId, setLoginState } from "@/store/reducers/user";
 import { IRootState } from "@/dto/ReduxDto";
-import { ILoginDto, ILoginErrorDto } from "@/dto/users/LoginDto";
-import { isError } from "react-query";
+import { ILoginDto } from "@/dto/users/LoginDto";
+import { setErrorInfo } from "@/store/reducers/global";
 
 export default function Login() {
   const { push } = useRouter();
   const [loginInfo, setLoginInfo] = useState<ILoginDto>({
     userId: "",
     password: "",
-  });
-  const [errorInfo, setErrorInfo] = useState<ILoginErrorDto>({
-    isError: false,
-    errorMsg: "",
   });
 
   const dispatch = useDispatch();
@@ -38,29 +34,21 @@ export default function Login() {
       localStorage.setItem("token", data.token);
       dispatch(setLoginState(1));
       dispatch(setCurrentUserId(loginInfo.userId));
-      setErrorInfo((current: ILoginErrorDto) => {
-        return {
-          ...current,
-          isError: false,
-        };
-      });
+
       //push("/");
     } else if (data.error === true && data.message) {
-      setErrorInfo({
-        isError: true,
-        errorMsg: data.message,
-      });
+      dispatch(
+        setErrorInfo({
+          isError: true,
+          errorMessage: data.message,
+        })
+      );
     }
   };
 
   return (
     <Box className={styled.loginWrap}>
       <Box className={styled.loginBox}>
-        {errorInfo.isError ? (
-          <Alert severity="error">{errorInfo.errorMsg}</Alert>
-        ) : (
-          ""
-        )}
         <TextField
           onChange={(e) =>
             setLoginInfo((current) => {
@@ -82,6 +70,7 @@ export default function Login() {
               };
             })
           }
+          type="password"
           label="PASSWORD"
           variant="standard"
         />
