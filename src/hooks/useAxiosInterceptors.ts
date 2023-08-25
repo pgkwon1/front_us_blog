@@ -102,6 +102,10 @@ export default async function useAxiosInterceptors() {
       const token = localStorage.getItem("token");
       const csrfToken = Cookies.get("X-CSRF-TOKEN");
 
+      if (["put", "patch", "delete"].includes(config.method as string)) {
+        config.data["userId"] = userId;
+      }
+
       if (
         "X-CSRF-TOKEN" in config.headers === false ||
         config.headers?.["X-CSRF-TOKEN"] === undefined
