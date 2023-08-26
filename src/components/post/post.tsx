@@ -12,10 +12,9 @@ import { ReactElement, useCallback } from "react";
 
 interface IPostProps {
   post: IPostList;
-  key: number;
 }
 
-export default function Post({ post, key }: IPostProps) {
+export default function Post({ post }: IPostProps) {
   const getCategoryIcon = useCallback(
     (category: Category): ReactElement<SvgIconProps> => {
       switch (category) {
@@ -37,7 +36,7 @@ export default function Post({ post, key }: IPostProps) {
   );
 
   return (
-    <Box key={key} className={styled.post}>
+    <Box className={styled.post}>
       <Link href={`/post/${post.id}`}>
         <Box className={styled.postInfo}>
           <Box className={styled.postCategory}>

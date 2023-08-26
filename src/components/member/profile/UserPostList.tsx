@@ -77,9 +77,9 @@ export default function UserPostList() {
         ? ""
         : postList.map((post, index) => {
             return (
-              <>
-                <Post post={post} key={index} />
-              </>
+              <Box key={index}>
+                <Post post={post} />
+              </Box>
             );
           })}
       <Box ref={lastPostRef}>Loading..</Box>
