@@ -226,15 +226,3 @@ export default function Profile({ profileOwner }: ProfileProps) {
     </Box>
   );
 }
-
-export const getServerSideProps = async () => {
-  apiClient.prefetchQuery("getAllSkillsList", async () => {
-    await axios.get("/skills");
-  });
-  return {
-    props: {
-      isSideBarRender: false,
-      dehydrateState: dehydrate(apiClient),
-    },
-  };
-};
