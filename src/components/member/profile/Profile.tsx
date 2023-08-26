@@ -20,6 +20,8 @@ import {
   DEFAULT_REACT_QUERY_STALE_TIME,
 } from "@/constants/react-query.constants";
 import { useRouter } from "next/router";
+import { GitHub, YouTube, Create, Instagram } from "@mui/icons-material";
+import Link from "next/link";
 
 interface ProfileProps {
   profileOwner: boolean;
@@ -41,6 +43,10 @@ export default function Profile({ profileOwner }: ProfileProps) {
     aboutMe: "",
     jobGroup: "",
     picture: "",
+    instagramLink: "",
+    githubLink: "",
+    youtubeLink: "",
+    blogLink: "",
     skills: [],
   });
   const [open, setOpen] = useState(false);
@@ -71,6 +77,10 @@ export default function Profile({ profileOwner }: ProfileProps) {
         userId: data?.userId,
         aboutMe: data?.aboutMe,
         jobGroup: data?.jobGroup,
+        instagramLink: data?.instagramLink,
+        githubLink: data?.githubLink,
+        youtubeLink: data?.youtubeLink,
+        blogLink: data?.blogLink,
         skills: data?.Skills.map((skill: any) => {
           return {
             id: skill.ProfileSkills.id,
@@ -112,6 +122,10 @@ export default function Profile({ profileOwner }: ProfileProps) {
                 <ProfileEdit
                   jobGroup={profileData?.jobGroup}
                   aboutMe={profileData?.aboutMe}
+                  instagramLink={profileData?.instagramLink}
+                  githubLink={profileData?.githubLink}
+                  youtubeLink={profileData?.youtubeLink}
+                  blogLink={profileData?.blogLink}
                   setOpen={setOpen}
                 />
               ) : (
@@ -130,6 +144,61 @@ export default function Profile({ profileOwner }: ProfileProps) {
             {profileData.aboutMe === ""
               ? "자기소개를 입력해주세요"
               : profileData.aboutMe}
+          </Box>
+
+          <Box sx={{ display: "flex", flexDirection: "row", gap: "1rem" }}>
+            {profileData?.instagramLink ? (
+              <Link
+                target="parent"
+                href={
+                  profileData?.instagramLink
+                    ? `https://instagram.com/${profileData?.instagramLink}/`
+                    : "#"
+                }
+              >
+                <Instagram fontSize="large" />
+              </Link>
+            ) : (
+              ""
+            )}
+            {profileData?.githubLink ? (
+              <Link
+                target="parent"
+                href={
+                  profileData?.githubLink
+                    ? `https://github.com/${profileData?.githubLink}`
+                    : "#"
+                }
+              >
+                <GitHub fontSize="large" />
+              </Link>
+            ) : (
+              ""
+            )}
+            {profileData?.youtubeLink ? (
+              <Link
+                target="parent"
+                href={
+                  profileData?.youtubeLink
+                    ? `https://youtube.com/@${profileData?.youtubeLink}`
+                    : "#"
+                }
+              >
+                <YouTube fontSize="large" />
+              </Link>
+            ) : (
+              ""
+            )}
+            {profileData?.blogLink ? (
+              <Link
+                target="parent"
+                href={profileData?.blogLink ? profileData?.blogLink : "#"}
+              >
+                <Create fontSize="large" />
+              </Link>
+            ) : (
+              ""
+            )}
           </Box>
         </Box>
         <Tabs
