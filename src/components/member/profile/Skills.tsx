@@ -5,7 +5,11 @@ import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import frontApi from "@/modules/apiInstance";
 import { useMutation, useQuery } from "react-query";
-import { ISkillsProp, ISkillsAttr } from "@/dto/profile/SkillsDto";
+import {
+  ISkillsProp,
+  ISkillsAttr,
+  IAllSkillsAttr,
+} from "@/dto/profile/SkillsDto";
 import apiClient from "@/modules/reactQueryInstance";
 export default function Skills({ skills }: ISkillsProp) {
   const userId = useSelector((state: IRootState) => state.userReducer.userId);
@@ -54,13 +58,7 @@ export default function Skills({ skills }: ISkillsProp) {
     });
   };
 
-  const { data, isLoading } = useQuery<ISkillsAttr[]>(
-    "getAllSkillList",
-    getAllSkillList,
-    {
-      enabled: false,
-    }
-  );
+  const { data } = useQuery("getAllSkillList", getAllSkillList, {});
 
   const addMutation = useMutation("addSkills", addSkills, {
     onSuccess: (data, variables) => {
@@ -84,13 +82,6 @@ export default function Skills({ skills }: ISkillsProp) {
       );
     },
   });
-
-  useEffect(() => {
-    apiClient.prefetchQuery("getAllSkillsList", getAllSkillList, {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-    });
-  }, []);
 
   useEffect(() => {
     if (skills?.length > 0) {
@@ -155,7 +146,6 @@ export default function Skills({ skills }: ISkillsProp) {
       }
     };
   }, []);
-
   return (
     <Box>
       <Typography variant="h5">Skills</Typography>
@@ -194,7 +184,7 @@ export default function Skills({ skills }: ISkillsProp) {
             freeSolo
             placeholder="기술을 선택해주세요."
             onChange={handleChange}
-            options={(data || []).map((skillInfo: ISkillsAttr) => {
+            options={data?.map((skillInfo: ISkillsAttr) => {
               const { id, name, category } = skillInfo;
               return {
                 id,

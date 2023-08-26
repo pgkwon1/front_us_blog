@@ -91,9 +91,7 @@ export default function ProjectWriteComponent({
     return result.data;
   };
 
-  const { data } = useQuery("getAllSkillList", getAllSkillList, {
-    enabled: false,
-  });
+  const { data } = useQuery("getAllSkillList", getAllSkillList);
   const handleProjectInfo = async (
     e: ChangeEvent<HTMLInputElement> | Date,
     attr: string
@@ -234,10 +232,6 @@ export default function ProjectWriteComponent({
     },
   });
   useEffect(() => {
-    apiClient.prefetchQuery("getAllSkillList", getAllSkillList, {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-    });
     if (edit) {
       apiClient.prefetchQuery(["getProject", id], getProject, {
         staleTime: DEFAULT_REACT_QUERY_STALE_TIME,
@@ -380,7 +374,9 @@ export default function ProjectWriteComponent({
 
         <Box className={styled.writeContainer}>
           <InputLabel htmlFor="personnel">
-            <Chip startDecorator={<PersonIcon />}>인원(본인포함)</Chip>
+            <Chip color="primary" startDecorator={<PersonIcon />}>
+              인원(본인포함)
+            </Chip>
           </InputLabel>
 
           <TextField
@@ -400,7 +396,9 @@ export default function ProjectWriteComponent({
         </Box>
         <Box className={styled.writeContainer}>
           <InputLabel htmlFor="role">
-            <Chip startDecorator={<WorkIcon />}>역할</Chip>
+            <Chip color="primary" startDecorator={<WorkIcon />}>
+              역할
+            </Chip>
           </InputLabel>
           <TextField
             fullWidth
@@ -421,7 +419,9 @@ export default function ProjectWriteComponent({
         </Box>
         <Box className={styled.writeContainer}>
           <InputLabel htmlFor="skill">
-            <Chip startDecorator={<CodeIcon />}>기술 스택</Chip>
+            <Chip color="primary" startDecorator={<CodeIcon />}>
+              기술 스택
+            </Chip>
           </InputLabel>
           <Stack
             className={styled.writeSkillStack}
@@ -455,7 +455,7 @@ export default function ProjectWriteComponent({
             id="skill"
             freeSolo
             placeholder="기술을 선택해주세요."
-            options={data.map((skillInfo: ISkillsAttr) => {
+            options={data?.map((skillInfo: ISkillsAttr) => {
               const { id, name, category } = skillInfo;
               return {
                 id,
@@ -468,7 +468,9 @@ export default function ProjectWriteComponent({
         </Box>
         <Box className={styled.writeContainer}>
           <InputLabel htmlFor="date">
-            <Chip startDecorator={<DateRangeIcon />}>작업 기간</Chip>
+            <Chip color="primary" startDecorator={<DateRangeIcon />}>
+              작업 기간
+            </Chip>
           </InputLabel>
           <Box>
             <Typography>시작일자</Typography>
@@ -512,11 +514,3 @@ export default function ProjectWriteComponent({
     </form>
   );
 }
-
-export const getServerSideProps = () => {
-  return {
-    props: {
-      isSideBarRender: false,
-    },
-  };
-};
