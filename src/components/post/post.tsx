@@ -1,4 +1,4 @@
-import { Box, Chip, ListItem, SvgIconProps } from "@mui/material";
+import { Box, Chip, ListItem, SvgIconProps, Typography } from "@mui/material";
 import styled from "@/styles/posts/Posts.module.css";
 import BusinessIcon from "@mui/icons-material/Business";
 import CodeIcon from "@mui/icons-material/Code";
@@ -12,10 +12,9 @@ import { ReactElement, useCallback } from "react";
 
 interface IPostProps {
   post: IPostList;
-  key: number;
 }
 
-export default function Post({ post, key }: IPostProps) {
+export default function Post({ post }: IPostProps) {
   const getCategoryIcon = useCallback(
     (category: Category): ReactElement<SvgIconProps> => {
       switch (category) {
@@ -37,7 +36,7 @@ export default function Post({ post, key }: IPostProps) {
   );
 
   return (
-    <Box key={key} className={styled.post}>
+    <Box className={styled.post}>
       <Link href={`/post/${post.id}`}>
         <Box className={styled.postInfo}>
           <Box className={styled.postCategory}>
@@ -50,7 +49,9 @@ export default function Post({ post, key }: IPostProps) {
         </Box>
 
         <Box className={styled.postContents}>
-          <Box>{post.contents.substr(0, 100)}</Box>
+          <Typography>
+            {post.contents.replace(/<\/?[^>]+(>|$)/g, "").substr(0, 100)}
+          </Typography>
         </Box>
 
         <Box className={styled.postDescription}>

@@ -1,5 +1,13 @@
 import frontApi, { formDataApi } from "@/modules/apiInstance";
-import { Avatar, Badge, Button, ModalClose, ModalDialog } from "@mui/joy";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Chip,
+  ModalClose,
+  ModalDialog,
+  Tooltip,
+} from "@mui/joy";
 import { Modal, TextField, Box } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -17,25 +25,43 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { IRootState } from "@/dto/ReduxDto";
 import { setProfilePicture } from "@/store/reducers/profile";
+import { GitHub, YouTube, Create, Instagram, Info } from "@mui/icons-material";
+import { setNoticeInfo } from "@/store/reducers/global";
 
 interface ISkillsEditProp {
   jobGroup: string;
   aboutMe: string;
+  instagramLink: string;
+  githubLink: string;
+  blogLink: string;
+  youtubeLink: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }
 interface IInfoAttr {
   jobGroup: string;
   aboutMe: string;
+  instagramLink: string;
+  githubLink: string;
+  blogLink: string;
+  youtubeLink: string;
 }
 export default function ProfileEdit({
   jobGroup,
   aboutMe,
+  instagramLink,
+  githubLink,
+  blogLink,
+  youtubeLink,
   setOpen,
 }: ISkillsEditProp) {
   const dispatch = useDispatch();
   const [info, setInfo] = useState<IInfoAttr>({
     jobGroup: "",
     aboutMe: "",
+    instagramLink: "",
+    githubLink: "",
+    youtubeLink: "",
+    blogLink: "",
   });
 
   const { userId } = useSelector((state: IRootState) => state.userReducer);
@@ -52,10 +78,13 @@ export default function ProfileEdit({
   };
   const editProfile = async (profileId: string) => {
     const result = await frontApi.patch("/profile/edit", {
-      userId,
       profileId,
       jobGroup: info.jobGroup,
       aboutMe: info.aboutMe,
+      instagramLink: info.instagramLink,
+      githubLink: info.githubLink,
+      youtubeLink: info.youtubeLink,
+      blogLink: info.blogLink,
     });
     return result;
   };
@@ -78,7 +107,17 @@ export default function ProfileEdit({
   };
 
   const editMutation = useMutation("editProfile", editProfile, {
-    onSuccess: () => {
+    onSuccess(data) {
+      const isError = typeof data !== "boolean" && "error" in data;
+      if (isError) {
+        dispatch(
+          setNoticeInfo({
+            isNotice: true,
+            noticeMessage: "성공적으로 수정되었습니다",
+          })
+        );
+      }
+
       setOpen(false);
     },
   });
@@ -94,8 +133,12 @@ export default function ProfileEdit({
     setInfo({
       jobGroup,
       aboutMe,
+      instagramLink,
+      githubLink,
+      blogLink,
+      youtubeLink,
     });
-  }, [jobGroup, aboutMe]);
+  }, [jobGroup, aboutMe, instagramLink, githubLink, blogLink, youtubeLink]);
   return (
     <Modal
       open={true}
@@ -145,6 +188,51 @@ export default function ProfileEdit({
           size="medium"
           onChange={(e) => setInfo({ ...info, aboutMe: e.target.value })}
         />
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <Box
+            sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+          >
+            <Chip>소셜미디어 링크</Chip>
+            <Tooltip
+              variant="soft"
+              color="primary"
+              title="각 미디어의 아이디만 입력해주세요. 블로그는 전체 링크를 입력해주세요."
+            >
+              <Info />
+            </Tooltip>
+          </Box>
+
+          <TextField
+            size="small"
+            label={<Instagram />}
+            fullWidth
+            onChange={(e) =>
+              setInfo({ ...info, instagramLink: e.target.value })
+            }
+            value={info?.instagramLink}
+          ></TextField>
+          <TextField
+            size="small"
+            label={<GitHub />}
+            fullWidth
+            onChange={(e) => setInfo({ ...info, githubLink: e.target.value })}
+            value={info?.githubLink}
+          ></TextField>
+          <TextField
+            size="small"
+            label={<YouTube />}
+            fullWidth
+            onChange={(e) => setInfo({ ...info, youtubeLink: e.target.value })}
+            value={info?.youtubeLink}
+          ></TextField>
+          <TextField
+            size="small"
+            label={<Create />}
+            fullWidth
+            onChange={(e) => setInfo({ ...info, blogLink: e.target.value })}
+            value={info?.blogLink}
+          ></TextField>
+        </Box>
         <Button onClick={handleEdit} sx={{ marginTop: "1rem" }} color="primary">
           수정
         </Button>
