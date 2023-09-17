@@ -18,7 +18,9 @@ export default function UserPostList() {
   const [postList, setPostList] = useState<IPostList[]>([]);
   const [page, setPage] = useState(1);
   const [length, setLength] = useState(0);
-  const userId = useSelector((state: IRootState) => state.userReducer.userId);
+  const userId = useSelector(
+    (state: IRootState) => state.profileReducer.profileUserId
+  );
   const lastPostRef = useRef<HTMLDivElement>(null);
   const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery(
     ["getUserPostList", userId],
