@@ -4,7 +4,7 @@ import apiClient from "@/modules/reactQueryInstance";
 import { setProfileOwner, setProfileUserId } from "@/store/reducers/profile";
 import axios from "axios";
 import { useEffect } from "react";
-import { dehydrate } from "react-query";
+import { dehydrate, QueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ProfileIndex() {
@@ -22,13 +22,15 @@ export default function ProfileIndex() {
 }
 
 export const getServerSideProps = async () => {
-  apiClient.prefetchQuery("getAllSkillsList", async () => {
-    await axios.get("/skills");
+  const client = new QueryClient();
+  client.prefetchQuery("getAllSkillsList", async () => {
+    const result = await axios.get("/skills");
+    return result.data;
   });
   return {
     props: {
       isSideBarRender: false,
-      dehydrateState: dehydrate(apiClient),
+      dehydrateState: dehydrate(client),
     },
   };
 };

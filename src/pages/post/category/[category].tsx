@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
-import { dehydrate, useInfiniteQuery } from "react-query";
+import { dehydrate, useInfiniteQuery, QueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentCategory } from "@/store/reducers/post";
 
@@ -10,7 +10,6 @@ import { ThreeDots } from "react-loader-spinner";
 
 import styled from "@/styles/posts/Posts.module.css";
 import frontApi from "@/modules/apiInstance";
-import apiClient from "@/modules/reactQueryInstance";
 import { IRootState } from "@/dto/ReduxDto";
 import { IPostList } from "@/dto/PostDto";
 import axios from "axios";
@@ -161,13 +160,14 @@ export default function PostByCategory() {
 }
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { category, page } = context.query;
-  apiClient.prefetchInfiniteQuery(["getPostByCategory", category], async () => {
+  const client = new QueryClient();
+  client.prefetchInfiniteQuery(["getPostByCategory", category], async () => {
     const result = await axios.get(`/post/category/${category}/${page}`);
     return result.data.postList;
   });
   return {
     props: {
-      dehydrateState: dehydrate(apiClient),
+      dehydrateState: dehydrate(client),
     },
   };
 }

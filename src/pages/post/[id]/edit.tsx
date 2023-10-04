@@ -6,7 +6,7 @@ import PostWrite from "../write";
 import frontApi from "@/modules/apiInstance";
 import apiClient from "@/modules/reactQueryInstance";
 import axios from "axios";
-import { dehydrate, useMutation, useQuery } from "react-query";
+import { dehydrate, useMutation, useQuery, QueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setEditMode, setEditPostContents } from "@/store/reducers/post";
 import { IRootState } from "@/dto/ReduxDto";
@@ -62,12 +62,14 @@ export default function Edit() {
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query;
-  apiClient.prefetchQuery(["getPost", id], async () => {
-    await axios.get(`/post/${id}`);
+  const client = new QueryClient();
+  client.prefetchQuery(["getPost", id], async () => {
+    const result = await axios.get(`/post/${id}`);
+    return result.data.post;
   });
   return {
     props: {
-      dehydrateState: dehydrate(apiClient),
+      dehydrateState: dehydrate(client),
     },
   };
 }
