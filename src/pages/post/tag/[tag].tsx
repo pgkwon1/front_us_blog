@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { GetServerSidePropsContext } from "next";
-import { dehydrate, useInfiniteQuery } from "react-query";
+import { dehydrate, useInfiniteQuery, QueryClient } from "react-query";
 import { useRouter } from "next/router";
 import { ThreeDots } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +17,6 @@ import styled from "@/styles/posts/Posts.module.css";
 
 import { IPostList, IPostListResponse } from "@/dto/PostDto";
 import frontApi from "@/modules/apiInstance";
-import apiClient from "@/modules/reactQueryInstance";
 import { setCurrentTag } from "@/store/reducers/post";
 import { IRootState } from "@/dto/ReduxDto";
 
@@ -136,13 +135,14 @@ export default function PostbyTag() {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { tag, page } = context.query;
-  apiClient.prefetchQuery(["getPostByTag", tag], async () => {
+  const client = new QueryClient();
+  client.prefetchQuery(["getPostByTag", tag], async () => {
     const result = await axios.get(`/post/tag/${tag}/${page}`);
     return result.data.postList;
   });
   return {
     props: {
-      dehydrateState: dehydrate(apiClient),
+      dehydrateState: dehydrate(client),
     },
   };
 }

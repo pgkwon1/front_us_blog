@@ -18,11 +18,11 @@ import {
   DEFAULT_REACT_QUERY_STALE_TIME,
 } from "@/constants/react-query.constants";
 import frontApi from "@/modules/apiInstance";
-import { useQuery } from "react-query";
+import { useQuery, QueryClient, dehydrate } from "react-query";
 import { IProjectInfoAttr } from "@/dto/profile/ProjectDto";
 import Link from "next/link";
 import moment from "moment-timezone";
-import project from "@/store/reducers/project";
+import axios from "axios";
 
 export default function ProjectView() {
   const [projectInfo, setProjectInfo] = useState<IProjectInfoAttr>({
@@ -156,9 +156,16 @@ export default function ProjectView() {
     </Box>
   );
 }
-export const getServerSideProps = () => {
+export const getServerSideProps = (context) => {
+  const { id } = context.query;
+  const client = new QueryClient();
+  client.prefetchQuery(["getProject", id], async () => {
+    const result = await axios.get(`/project/${id}`);
+    return result.data;
+  });
   return {
     props: {
+      dehydratedState: dehydrate(client),
       isSideBarRender: false,
     },
   };

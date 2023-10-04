@@ -4,6 +4,8 @@ import { setProfileOwner, setProfileUserId } from "@/store/reducers/profile";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { QueryClient, dehydrate } from "react-query";
+import axios from "axios";
 
 export default function ProfileUserId() {
   const router = useRouter();
@@ -27,8 +29,14 @@ export default function ProfileUserId() {
 }
 
 export const getServerSideProps = () => {
+  const client = new QueryClient();
+  client.prefetchQuery("getAllSkillsList", async () => {
+    const result = await axios.get("/skills");
+    return result.data;
+  });
   return {
     props: {
+      dehydratedState: dehydrate(client),
       isSideBarRender: false,
     },
   };
