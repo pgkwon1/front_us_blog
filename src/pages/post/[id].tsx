@@ -17,7 +17,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import "highlight.js/styles/vs2015.css";
 import hljs from "highlight.js";
-import { dehydrate, useMutation, useQuery } from "react-query";
+import { QueryClient, dehydrate, useMutation, useQuery } from "react-query";
 import apiClient from "@/modules/reactQueryInstance";
 import frontApi from "@/modules/apiInstance";
 import Link from "next/link";
@@ -256,14 +256,15 @@ export default function PostView() {
 
 export async function getServerSideProps(context: any) {
   const { id } = context.query;
-  await apiClient.prefetchQuery(["getPost", id], async () => {
+  const client = new QueryClient();
+  await client.prefetchQuery(["getPost", id], async () => {
     const result = await axios.get(`/post/${id}`);
     return result.data.post;
   });
 
   return {
     props: {
-      dehydratedState: dehydrate(apiClient),
+      dehydratedState: dehydrate(client),
     },
   };
 }
