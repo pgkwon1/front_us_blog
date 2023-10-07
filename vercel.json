@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/api/:path*",
-      "destination": "http://3.39.222.57:4001/:path*"
+      "destination": "http://3.38.162.180:4001/:path*"
     }
   ],
   "framework": "nextjs",
