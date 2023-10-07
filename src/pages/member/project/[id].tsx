@@ -23,6 +23,7 @@ import { IProjectInfoAttr } from "@/dto/profile/ProjectDto";
 import Link from "next/link";
 import moment from "moment-timezone";
 import axios from "axios";
+import { GetServerSidePropsContext } from "next";
 
 export default function ProjectView() {
   const [projectInfo, setProjectInfo] = useState<IProjectInfoAttr>({
@@ -156,7 +157,7 @@ export default function ProjectView() {
     </Box>
   );
 }
-export const getServerSideProps = (context) => {
+export const getServerSideProps = (context: GetServerSidePropsContext) => {
   const { id } = context.query;
   const client = new QueryClient();
   client.prefetchQuery(["getProject", id], async () => {
