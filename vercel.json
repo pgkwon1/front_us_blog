@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/api/:path*",
-      "destination": "https://usblog.sharepl.net/:path*"
+      "destination": "http://3.39.222.57:4001/:path*"
     }
   ],
   "framework": "nextjs",
