@@ -5,11 +5,7 @@ import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import frontApi from "@/modules/apiInstance";
 import { useMutation, useQuery } from "react-query";
-import {
-  ISkillsProp,
-  ISkillsAttr,
-  IAllSkillsAttr,
-} from "@/dto/profile/SkillsDto";
+import { ISkillsProp, ISkillsAttr } from "@/dto/profile/SkillsDto";
 import apiClient from "@/modules/reactQueryInstance";
 export default function Skills({ skills }: ISkillsProp) {
   const userId = useSelector((state: IRootState) => state.userReducer.userId);
