@@ -1,10 +1,11 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "http://www.us-blog.p-e.kr/:path*"
     }
   ],
+  "
   "framework": "nextjs",
   "devCommand": "next dev",
   "installCommand": "npm install"
