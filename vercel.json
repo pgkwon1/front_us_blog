@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/api/:path*",
-      "destination": "http://api.us-blog.p-e.kr/:path*"
+      "destination": "http://www.us-blog.p-e.kr/:path*"
     }
   ],
   "framework": "nextjs",
